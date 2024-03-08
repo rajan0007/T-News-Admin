@@ -15,10 +15,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import { Routes, Route, Navigate } from "react-router-dom";
 // import { API_URL } from "./config";
-import Contactus from "./Pages/Contactus/Contactus";
-import ChangePassword from "./Pages/ChangePass/ChangePassword";
-import ForgotPassword from "./Pages/ForgotPass/ForgotPassword";
-import ChangeEmail from "./Pages/ChangeEmail/ChangeEmail";
 import axiosInstance from "./services/http-common";
 import DataServices from "./services/requestApi";
 
@@ -43,7 +39,7 @@ function App() {
   // React.useEffect(() => {
   //   if (Authenticated) {
   //     setAuthenticated(true);
-      
+
   //   } else {
   //     setAuthenticated(false);
   //   }
@@ -59,7 +55,7 @@ function App() {
   //       axiosInstance.defaults.headers.token = sessionStorage.getItem("token");
 
   //       setAuthenticated(true);
-        
+
   //     } else {
   //       setAuthenticated(false);
   //     }
@@ -103,7 +99,7 @@ function App() {
           setActive9,
         }}
       >
-        {isAuthenticated  ? (
+        {isAuthenticated ? (
           <div className="wrapper">
             <Header />
             <SideBar />
@@ -113,11 +109,8 @@ function App() {
         ) : (
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/change-password" element={<ChangePassword />} />
-            <Route path="/change-email" element={<ChangeEmail />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
+
             <Route path="*" element={<Navigate to="/login" replace />} />
-            <Route path="/contact-us" element={<Contactus />} />
           </Routes>
         )}
       </AppContext.Provider>
