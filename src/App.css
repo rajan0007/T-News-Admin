@@ -1,0 +1,54 @@
+/* a.nav-link:hover{
+  background-color: #007bff !important;
+} */
+/* .nav-link:active,
+.nav-link:focus {
+  background-color: orange !important;
+} */
+@import "~antd/dist/antd.css";
+.MuiTabs-flexContainer {
+  display: flex !important;
+  justify-content: space-between !important;
+}
+.courser {
+  cursor: pointer;
+}
+.ant-picker-dropdown-placement-bottomLeft {
+  left: 50% !important;
+}
+
+.nav-item {
+  width: 100% !important;
+}
+
+::-webkit-scrollbar-track {
+  display: 0px !important;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  display: 0px !important;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  display: 0px !important;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 0px !important;
+  /* Adjust this value to set the width of the scrollbar */
+  background-color: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.sidebar:hover {
+  overflow-y: hidden;
+}
+
+.sidebar:hover::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
