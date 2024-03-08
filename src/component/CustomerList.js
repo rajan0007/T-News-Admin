@@ -27,16 +27,22 @@ export default function CustomerList() {
   });
 
   const LoginSchema = Yup.object().shape({
+    password: Yup.string()
+    .min(3, "Password must be 3 characters at minimum")
+    .required("Password is required"),
+    firstName: Yup.string().required("Name is required"),
+    email:Yup.string()
+    .email("Invalid email address format")
+    .required("Email is required"),
+    lastName: Yup.string().required("Name is required"),
+    phoneNo: Yup.string()
+    .min(10, "PhoneNumber must be 10 characters")
+    .required("PhoneNumber is required"),
+    profession: Yup.string().required("Profession is required"),
+    city: Yup.string().required("City is required"),
+    state: Yup.string().required("State is required"),
     password: Yup.string().required("required"),
-    firstName: Yup.string().required("required"),
-    email: Yup.string().required("required"),
-    lastName: Yup.string().required("required"),
-    phoneNo: Yup.string().required("required"),
-    profession: Yup.string().required("required"),
-    city: Yup.string().required("required"),
-    state: Yup.string().required("required"),
-    password: Yup.string().required("required"),
-    address: Yup.string().required("required"),
+    address: Yup.string().required("Address is required"),
   });
 
   React.useEffect(() => {

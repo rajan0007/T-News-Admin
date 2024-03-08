@@ -29,14 +29,15 @@ export default function Login() {
       <div class="login-box">
         <div class="card card-outline card-success">
           <div class="card-header text-center">
-            {/* <p class="h1">
-              <b>Casino</b>
-            </p> */}
+           
             <img
               src={Logo}
               alt="Logo"
               style={{ opacity: "0.8", width: "30%", height: "50px" }}
             />
+           <p class="h3">
+              <b>House-Fix</b>
+            </p>
           </div>
           <div class="card-body">
             <p class="login-box-msg">Sign in to start your session</p>
@@ -56,8 +57,8 @@ export default function Login() {
                   if (data?.status) {
                     setAuthenticated(true);
                     toast.success(data?.message);
-                    console.log("data?.data?",data?.data)
-                    sessionStorage.setItem("user", JSON.stringify(data?.data?.data));
+                    console.log("data?.data?",data?.data?.data._id)
+                    sessionStorage.setItem("user", JSON.stringify(data?.data?.data._id));
                     sessionStorage.setItem("role", data?.data?.role);
 
                     // axiosInstance.defaults.headers.token = data?.data?.token;

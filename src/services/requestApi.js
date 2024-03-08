@@ -12,6 +12,17 @@ class DataService {
   UpdateProvider(data) {
     return axiosInstance.patch("provider/updateProvider", data);
   }
+  UpdateAdmin(data) {
+    return axiosInstance.patch("auth/changeAdminPassword", data);
+  }
+  FindProvider(data) {
+    console.log("datafatch",data)
+    return axiosInstance.post("/provider/findProviderById", data);
+  }
+  ProviderImage(data) {
+    return axiosInstance.post("/auth/upload", data);
+  }
+
 }
 
 const DataServices = new DataService();

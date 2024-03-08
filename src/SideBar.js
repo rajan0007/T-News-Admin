@@ -13,13 +13,13 @@ import PaymentIcon from "@mui/icons-material/Payment";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import NavigateNextRoundedIcon from "@mui/icons-material/NavigateNextRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
-import PostAddIcon from '@mui/icons-material/PostAdd';
-import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
-import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import PostAddIcon from "@mui/icons-material/PostAdd";
+import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 export default function SideBar() {
   const history = useNavigate();
-  const isPro = sessionStorage.getItem("role") 
-  console.log("isPro",isPro)
+  const isPro = sessionStorage.getItem("role");
+  console.log("isPro", isPro);
 
   const {
     showPage,
@@ -111,7 +111,7 @@ export default function SideBar() {
                     window.location.pathname.split("/")[1] === "profile" &&
                     "active"
                   }`}
-                  id="dashboard"
+                  id="profile"
                   style={{ cursor: "pointer" }}
                   onClick={() => {
                     history("/profile");
@@ -130,91 +130,92 @@ export default function SideBar() {
                   <p style={{ color: "white" }}>Profile</p>
                 </p>
               </div>
-{isPro!="Provider" &&   <li className="nav-item mt-2">
-                <p
-                  className="nav-link"
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    setActive1(!active1);
-                    setActive2(true);
-                    setActive3(true);
-                    setActive4(true);
-                    setActive5(true);
-                    setActive9(true);
-                    setActive6(true);
-                    setActive7(true);
-                    console.log("active8::: ", active8);
-                    setActive8(true);
-                  }}
-                >
-                  <div>
-                    <SupervisorAccountIcon
-                      className=" mr-2"
-                      style={{ color: "white" }}
-                    />
-                    <p
-                      style={{
-                        color: "white",
-                      }}
-                    >
-                      Users
-                    </p>
-                  </div>
-                  {active1 ? (
-                    <NavigateNextRoundedIcon style={{ color: "white" }} />
-                  ) : (
-                    <ExpandMoreRoundedIcon style={{ color: "white" }} />
-                  )}
-                </p>
-                <ul className={`nav ${active1 ? "nav-treeview" : ""}`}>
-                  <li className="nav-item">
-                    <p
-                      className={`nav-link ${
-                        window.location.pathname.split("/")[1] ===
-                          "customer-list" && "active"
-                      } d-flex`}
-                      onClick={() => {
-                        history("/customer-list");
-                        setShowPage(false);
-                      }}
-                      style={{ cursor: "pointer" }}
-                    >
+              {isPro != "Provider" && (
+                <li className="nav-item ">
+                  <p
+                    className="nav-link"
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      setActive1(!active1);
+                      setActive2(true);
+                      setActive3(true);
+                      setActive4(true);
+                      setActive5(true);
+                      setActive9(true);
+                      setActive6(true);
+                      setActive7(true);
+                      console.log("active8::: ", active8);
+                      setActive8(true);
+                    }}
+                  >
+                    <div>
+                      <SupervisorAccountIcon
+                        className=" mr-2"
+                        style={{ color: "white" }}
+                      />
                       <p
-                        className="mt-1 "
-                        style={{ marginLeft: "34px", color: "white" }}
+                        style={{
+                          color: "white",
+                        }}
                       >
-                        Customer List
+                        Users
                       </p>
-                    </p>
-                  </li>
-                  <li className="nav-item">
-                    <p
-                      className={`nav-link ${
-                        window.location.pathname.split("/")[1] ===
-                          "professional-list" && "active"
-                      } d-flex`}
-                      onClick={() => {
-                        history("/professional-list");
-                        setShowPage(false);
-                      }}
-                      style={{ cursor: "pointer" }}
-                    >
+                    </div>
+                    {active1 ? (
+                      <NavigateNextRoundedIcon style={{ color: "white" }} />
+                    ) : (
+                      <ExpandMoreRoundedIcon style={{ color: "white" }} />
+                    )}
+                  </p>
+                  <ul className={`nav ${active1 ? "nav-treeview" : ""}`}>
+                    <li className="nav-item">
                       <p
-                        className="mt-1 "
-                        style={{ marginLeft: "34px", color: "white" }}
+                        className={`nav-link ${
+                          window.location.pathname.split("/")[1] ===
+                            "customer-list" && "active"
+                        } d-flex`}
+                        onClick={() => {
+                          history("/customer-list");
+                          setShowPage(false);
+                        }}
+                        style={{ cursor: "pointer" }}
                       >
-                        Professional List
+                        <p
+                          className="mt-1 "
+                          style={{ marginLeft: "34px", color: "white" }}
+                        >
+                          Customer List
+                        </p>
                       </p>
-                    </p>
-                  </li>
-                </ul>
-              </li>
-              }
-              
+                    </li>
+                    <li className="nav-item">
+                      <p
+                        className={`nav-link ${
+                          window.location.pathname.split("/")[1] ===
+                            "professional-list" && "active"
+                        } d-flex`}
+                        onClick={() => {
+                          history("/professional-list");
+                          setShowPage(false);
+                        }}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <p
+                          className="mt-1 "
+                          style={{ marginLeft: "34px", color: "white" }}
+                        >
+                          Professional List
+                        </p>
+                      </p>
+                    </li>
+                  </ul>
+                </li>
+              )}
+
               <div className="nav-item">
                 <p
                   className={`nav-link ${
@@ -236,40 +237,42 @@ export default function SideBar() {
                     setActive8(true);
                   }}
                 >
-                  <PostAddIcon  className="mr-2" style={{ color: "white" }} />
+                  <PostAddIcon className="mr-2" style={{ color: "white" }} />
                   <p style={{ color: "white" }}>Booking</p>
                 </p>
               </div>
-              
-              
-            
-             
-              {isPro!="Provider" &&  <div className="nav-item">
-                <p
-                  className={`nav-link ${
-                    window.location.pathname.split("/")[1] === "blog" &&
-                    "active"
-                  }`}
-                  id="blog"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {
-                    history("/blog");
-                    setActive1(true);
-                    setActive2(true);
-                    setActive3(true);
-                    setActive4(true);
-                    setActive5(true);
-                    setActive9(true);
-                    setActive6(true);
-                    setActive7(true);
-                    setActive8(true);
-                  }}
-                >
-                  <SubscriptionsIcon className="mr-2" style={{ color: "white" }} />
-                  <p style={{ color: "white" }}>Blog</p>
-                </p>
-              </div> }
-             
+
+              {isPro != "Provider" && (
+                <div className="nav-item">
+                  <p
+                    className={`nav-link ${
+                      window.location.pathname.split("/")[1] === "blog" &&
+                      "active"
+                    }`}
+                    id="blog"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      history("/blog");
+                      setActive1(true);
+                      setActive2(true);
+                      setActive3(true);
+                      setActive4(true);
+                      setActive5(true);
+                      setActive9(true);
+                      setActive6(true);
+                      setActive7(true);
+                      setActive8(true);
+                    }}
+                  >
+                    <SubscriptionsIcon
+                      className="mr-2"
+                      style={{ color: "white" }}
+                    />
+                    <p style={{ color: "white" }}>Blog</p>
+                  </p>
+                </div>
+              )}
+
               <div className="nav-item">
                 <p
                   className={`nav-link ${
@@ -291,7 +294,10 @@ export default function SideBar() {
                     setActive8(true);
                   }}
                 >
-                  <AccountBalanceIcon className="mr-2" style={{ color: "white" }} />
+                  <AccountBalanceIcon
+                    className="mr-2"
+                    style={{ color: "white" }}
+                  />
                   <p style={{ color: "white" }}>Payment</p>
                 </p>
               </div>
