@@ -10,7 +10,7 @@ import SweetAlert from "react-bootstrap-sweetalert";
 import { toast } from "react-toastify";
 import DataServices from "../services/requestApi";
 
-export default function ProfessionlList() {
+export default function Booking() {
   const [showPage, setShowPage] = useState(false);
   const [alert, setAlert] = React.useState(null);
   const [tableData, setTableData] = React.useState([]);
@@ -38,7 +38,6 @@ export default function ProfessionlList() {
     phoneNo: Yup.string()
       .min(10, "PhoneNumber must be 10 characters")
       .required("PhoneNumber is required"),
-    profession: Yup.string().required("Profession is required"),
     city: Yup.string().required("City is required"),
     state: Yup.string().required("State is required"),
     password: Yup.string().required("required"),
@@ -52,17 +51,18 @@ export default function ProfessionlList() {
   const getBranch = async () => {
     setLoader(true);
     try {
-      const { data } = await DataServices.GetAllProvider();
+      const { data } = await DataServices.Booking();
       setLoader(false);
+      console.log("getBranch data:", data);
       setTableData(data?.data);
     } catch (e) {
-      toast.error(e.data.message);
+      console.error("Error fetching data:", e);
     }
   };
 
   const searchingData = [];
   let data = [];
-  // console.log("tableData 111 ---", tableData, searchTourName);
+  console.log("tableData 111 ---", tableData, searchTourName);
   // if (searchTourName) {
   //   console.log("tableData 222 ---", tableData, tableData.length > 0);
   //   data = tableData.filter((item) => {
@@ -81,27 +81,29 @@ export default function ProfessionlList() {
     setOpenValue(2);
   };
 
-  const updateTournament = async (value) => {
+  const updateCustomer = async (value) => {
+    console.log("value", value);
     setButtonLoader(true);
     const dto = { id: rowValue._id, ...value };
     console.log("data::: ", dto);
-    try {
-      const { data } = await DataServices.UpdateProvider(dto);
-      if (data.status) {
-        toast.success(data?.message);
-        setShowPage(!showPage);
-        getBranch();
-      } else {
-        toast.warning(data?.message);
-      }
-      setButtonLoader(false);
-    } catch (e) {
-      console.log("e::: ", e);
-      setButtonLoader(false);
-    }
+    // try {
+    //   const { data } = await DataServices.UpdateCustomer(dto);
+    //   if (data.status) {
+    //     toast.success(data?.message);
+    //     setShowPage(!showPage);
+    //     getBranch();
+    //   } else {
+    //     toast.warning(data?.message);
+    //   }
+    //   setButtonLoader(false);
+    // } catch (e) {
+    //   console.log("e::: ", e);
+    //   setButtonLoader(false);
+    // }
   };
 
   const warningWithConfirmMessage = (e) => {
+    console.log("warningWithConfirmMessage called");
     setAlert(
       <SweetAlert
         warning
@@ -109,11 +111,8 @@ export default function ProfessionlList() {
         title="Are you sure?"
         onConfirm={() => {
           deleteData(e);
-          //  setIsPlayerEditButtonClicked(false);
         }}
         onCancel={() => setAlert(null)}
-        // confirmBtnCssClass={classes.button + " " + classes.danger}
-        // cancelBtnCssClass={classes.button + " " + classes.danger}
         confirmBtnBsStyle="success"
         cancelBtnBsStyle="danger"
         confirmBtnText="Yes, delete it!"
@@ -124,6 +123,39 @@ export default function ProfessionlList() {
   };
 
   const successDeleted = (msg) => {
+    console.log("successDeleted called");
+    setAlert(
+      <SweetAlert
+        success
+        style={{ display: "block" }}
+        title={<h4>{msg}</h4>}
+        onConfirm={() => {
+          getBranch();
+          setAlert(null);
+        }}
+        confirmBtnBsStyle="success"
+      ></SweetAlert>
+    );
+  };
+
+  const deleteData = async (e) => {
+    console.log("deleteData called with:", e._id);
+    const dto = { id: e._id };
+    // try {
+    //   const { data } = await DataServices.DeleteCustomer(dto);
+    //   console.log("deleteData response:", data);
+    //   if (data?.status) {
+    //     successDeleted(data?.message);
+    //     getBranch(); // Refresh data after successful deletion
+    //   } else {
+    //     toast.warning(data?.message);
+    //   }
+    // } catch (error) {
+    //   console.error("Error deleting data:", error);
+    // }
+  };
+
+  const successAdd = (msg) => {
     console.log("donw");
     setAlert(
       <SweetAlert
@@ -133,31 +165,13 @@ export default function ProfessionlList() {
         onConfirm={() => {
           getBranch();
           setAlert(null);
+          setShowPage(false);
           // setIsPlayerEditButtonClicked(false);
         }}
         confirmBtnBsStyle="success"
       ></SweetAlert>
     );
   };
-
-  const deleteData = async (e) => {
-    console.log("e===>", e._id);
-    const dto = { id: e._id }; 
-    try {
-      const { data } = await DataServices.DeleteProvider(dto);
-      if (data?.status) {
-        successDeleted(data?.message);
-        getBranch();
-      } else {
-        toast.warning(data?.message);
-      }
-    } catch (error) {
-      console.log("error",error)
-    }
-    
-  };
-
-  
 
   const successEdit = (msg) => {
     console.log("donw");
@@ -190,7 +204,6 @@ export default function ProfessionlList() {
                   email: rowValue ? rowValue?.email : "",
                   lastName: rowValue ? rowValue?.lastName : "",
                   phoneNo: rowValue ? rowValue?.phoneNo : "",
-                  profession: rowValue ? rowValue?.profession : "",
                   city: rowValue ? rowValue?.city : "",
                   state: rowValue ? rowValue?.state : "",
                   address: rowValue ? rowValue?.address : "",
@@ -199,7 +212,7 @@ export default function ProfessionlList() {
                 validationSchema={LoginSchema}
                 onSubmit={(values) => {
                   if (parseInt(openValue) === 2) {
-                    updateTournament(values);
+                    updateCustomer(values);
                   }
                 }}
               >
@@ -264,7 +277,7 @@ export default function ProfessionlList() {
                         <Field
                           type="text"
                           name="phoneNo"
-                          placeholder="phoneNo"
+                          placeholder="PhoneNo"
                           className={`mt-2 form-control
                           ${
                             touched.phoneNo && errors.phoneNo
@@ -278,22 +291,25 @@ export default function ProfessionlList() {
                           className="invalid-feedback"
                         />
                       </div>
+
                       <div className="form-group">
-                        <label htmlFor="password">Profession</label>
+                        <label htmlFor="password">Address</label>
                         <Field
                           type="text"
-                          name="profession"
-                          placeholder="profession"
+                          name="address"
+                          placeholder="Address"
+                          as="textarea"
+                          row={4}
                           className={`mt-2 form-control
                           ${
-                            touched.profession && errors.profession
+                            touched.address && errors.address
                               ? "is-invalid"
                               : ""
                           }`}
                         />
                         <ErrorMessage
                           component="div"
-                          name="profession"
+                          name="address"
                           className="invalid-feedback"
                         />
                       </div>
@@ -309,25 +325,6 @@ export default function ProfessionlList() {
                         <ErrorMessage
                           component="div"
                           name="city"
-                          className="invalid-feedback"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="password">address</label>
-                        <Field
-                          type="text"
-                          name="address"
-                          placeholder="Address"
-                          className={`mt-2 form-control
-                          ${
-                            touched.address && errors.address
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                        />
-                        <ErrorMessage
-                          component="div"
-                          name="address"
                           className="invalid-feedback"
                         />
                       </div>
@@ -441,10 +438,16 @@ export default function ProfessionlList() {
                 <thead>
                   <tr>
                     <th>SrNo</th>
-                    <th>Email</th>
                     <th>User name</th>
+                    <th>Email</th>
                     <th>Phone No</th>
-                    <th>Profession</th>
+                    <th>Professionals No</th>
+                    <th>Ladder</th>
+                    <th>Date</th>
+                    <th>Hours</th>
+                    <th>time</th>
+                    <th>Description</th>
+                    <th>zipCode</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -453,23 +456,29 @@ export default function ProfessionlList() {
                     <>
                       <tr>
                         <td>{i + 1}</td>
-                        <td>{item?.email}</td>
                         <td>
                           {item?.firstName} {item?.lastName}
                         </td>
-                        <td>{item?.phoneNo}</td>
-                        <td>{item?.profession}</td>
+                        <td>{item?.email}</td>
+                        <td>{item?.phoneNo ? item?.phoneNo : "-"}</td>
+                        <td>{item?.professionalsNo ? item?.professionalsNo : "-"}</td>
+                        <td>{item?.ladder ? item?.ladder : "-"}</td>
+                        <td>{item?.date ? item?.date : "-"}</td>
+                        <td>{item?.hours ? item?.hours : "-"}</td>
+                        <td>{item?.time ? item?.time : "-"}</td>
+                        <td>{item?.desc ? item?.desc : "-"}</td>
+                        <td>{item?.zipCode ? item?.zipCode : "-"}</td>
                         <td className="d-flex justify-content-evenly ">
                           <EditIcon
                             className="mr-3 courser"
                             onClick={() => {
-                              setShowPage(!showPage);
-                              clickEditButton(item);
+                            //   setShowPage(!showPage);
+                            //   clickEditButton();
                             }}
                           />
                           <ClearIcon
                             className="courser text-danger"
-                            onClick={() => warningWithConfirmMessage(item)}
+                            onClick={() => warningWithConfirmMessage()}
                           />
                         </td>
                       </tr>

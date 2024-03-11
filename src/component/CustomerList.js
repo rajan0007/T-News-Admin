@@ -28,17 +28,16 @@ export default function CustomerList() {
 
   const LoginSchema = Yup.object().shape({
     password: Yup.string()
-    .min(3, "Password must be 3 characters at minimum")
-    .required("Password is required"),
+      .min(3, "Password must be 3 characters at minimum")
+      .required("Password is required"),
     firstName: Yup.string().required("Name is required"),
-    email:Yup.string()
-    .email("Invalid email address format")
-    .required("Email is required"),
+    email: Yup.string()
+      .email("Invalid email address format")
+      .required("Email is required"),
     lastName: Yup.string().required("Name is required"),
     phoneNo: Yup.string()
-    .min(10, "PhoneNumber must be 10 characters")
-    .required("PhoneNumber is required"),
-    profession: Yup.string().required("Profession is required"),
+      .min(10, "PhoneNumber must be 10 characters")
+      .required("PhoneNumber is required"),
     city: Yup.string().required("City is required"),
     state: Yup.string().required("State is required"),
     password: Yup.string().required("required"),
@@ -52,12 +51,12 @@ export default function CustomerList() {
   const getBranch = async () => {
     setLoader(true);
     try {
-      const { data } = await DataServices.GetAllProvider();
+      const { data } = await DataServices.GetUser();
       setLoader(false);
-      console.log("data", data);
+      console.log("getBranch data:", data);
       setTableData(data?.data);
     } catch (e) {
-      toast.error(e.data.message);
+      console.error("Error fetching data:", e);
     }
   };
 
@@ -82,12 +81,13 @@ export default function CustomerList() {
     setOpenValue(2);
   };
 
-  const updateTournament = async (value) => {
+  const updateCustomer = async (value) => {
+    console.log("value", value);
     setButtonLoader(true);
     const dto = { id: rowValue._id, ...value };
     console.log("data::: ", dto);
     try {
-      const { data } = await DataServices.UpdateProvider(dto);
+      const { data } = await DataServices.UpdateCustomer(dto);
       if (data.status) {
         toast.success(data?.message);
         setShowPage(!showPage);
@@ -103,7 +103,7 @@ export default function CustomerList() {
   };
 
   const warningWithConfirmMessage = (e) => {
-    console.log("donw");
+    console.log("warningWithConfirmMessage called");
     setAlert(
       <SweetAlert
         warning
@@ -111,11 +111,8 @@ export default function CustomerList() {
         title="Are you sure?"
         onConfirm={() => {
           deleteData(e);
-          //  setIsPlayerEditButtonClicked(false);
         }}
         onCancel={() => setAlert(null)}
-        // confirmBtnCssClass={classes.button + " " + classes.danger}
-        // cancelBtnCssClass={classes.button + " " + classes.danger}
         confirmBtnBsStyle="success"
         cancelBtnBsStyle="danger"
         confirmBtnText="Yes, delete it!"
@@ -126,7 +123,7 @@ export default function CustomerList() {
   };
 
   const successDeleted = (msg) => {
-    console.log("donw");
+    console.log("successDeleted called");
     setAlert(
       <SweetAlert
         success
@@ -135,24 +132,27 @@ export default function CustomerList() {
         onConfirm={() => {
           getBranch();
           setAlert(null);
-          // setIsPlayerEditButtonClicked(false);
         }}
         confirmBtnBsStyle="success"
       ></SweetAlert>
     );
   };
 
-  const deleteData = (e) => {
-    // console.log("e===>", e._id);
-    // const data = { id: e._id };
-    // axios.post(`${API_URL}/api/admin/delete-admin-player`, data).then((res) => {
-    //   console.log(res);
-    //   console.log(res.data);
-    //   if (res.data.isValid) {
-    //     successDeleted(res.data.message);
-    //   }
-    //   getBranch();
-    // });
+  const deleteData = async (e) => {
+    console.log("deleteData called with:", e._id);
+    const dto = { id: e._id };
+    try {
+      const { data } = await DataServices.DeleteCustomer(dto);
+      console.log("deleteData response:", data);
+      if (data?.status) {
+        successDeleted(data?.message);
+        getBranch(); // Refresh data after successful deletion
+      } else {
+        toast.warning(data?.message);
+      }
+    } catch (error) {
+      console.error("Error deleting data:", error);
+    }
   };
 
   const successAdd = (msg) => {
@@ -204,7 +204,6 @@ export default function CustomerList() {
                   email: rowValue ? rowValue?.email : "",
                   lastName: rowValue ? rowValue?.lastName : "",
                   phoneNo: rowValue ? rowValue?.phoneNo : "",
-                  profession: rowValue ? rowValue?.profession : "",
                   city: rowValue ? rowValue?.city : "",
                   state: rowValue ? rowValue?.state : "",
                   address: rowValue ? rowValue?.address : "",
@@ -213,7 +212,7 @@ export default function CustomerList() {
                 validationSchema={LoginSchema}
                 onSubmit={(values) => {
                   if (parseInt(openValue) === 2) {
-                    updateTournament(values);
+                    updateCustomer(values);
                   }
                 }}
               >
@@ -278,7 +277,7 @@ export default function CustomerList() {
                         <Field
                           type="text"
                           name="phoneNo"
-                          placeholder="phoneNo"
+                          placeholder="PhoneNo"
                           className={`mt-2 form-control
                           ${
                             touched.phoneNo && errors.phoneNo
@@ -292,22 +291,25 @@ export default function CustomerList() {
                           className="invalid-feedback"
                         />
                       </div>
+
                       <div className="form-group">
-                        <label htmlFor="password">Profession</label>
+                        <label htmlFor="password">Address</label>
                         <Field
                           type="text"
-                          name="profession"
-                          placeholder="profession"
+                          name="address"
+                          placeholder="Address"
+                          as="textarea"
+                          row={4}
                           className={`mt-2 form-control
                           ${
-                            touched.profession && errors.profession
+                            touched.address && errors.address
                               ? "is-invalid"
                               : ""
                           }`}
                         />
                         <ErrorMessage
                           component="div"
-                          name="profession"
+                          name="address"
                           className="invalid-feedback"
                         />
                       </div>
@@ -323,25 +325,6 @@ export default function CustomerList() {
                         <ErrorMessage
                           component="div"
                           name="city"
-                          className="invalid-feedback"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="password">address</label>
-                        <Field
-                          type="text"
-                          name="address"
-                          placeholder="Address"
-                          className={`mt-2 form-control
-                          ${
-                            touched.address && errors.address
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                        />
-                        <ErrorMessage
-                          component="div"
-                          name="address"
                           className="invalid-feedback"
                         />
                       </div>
@@ -455,10 +438,10 @@ export default function CustomerList() {
                 <thead>
                   <tr>
                     <th>SrNo</th>
-                    <th>Email</th>
                     <th>User name</th>
+                    <th>Email</th>
                     <th>Phone No</th>
-                    <th>Profession</th>
+                    <th>Address</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -467,12 +450,13 @@ export default function CustomerList() {
                     <>
                       <tr>
                         <td>{i + 1}</td>
-                        <td>{item?.email}</td>
                         <td>
                           {item?.firstName} {item?.lastName}
                         </td>
-                        <td>{item?.phoneNo}</td>
-                        <td>{item?.profession}</td>
+                        <td>{item?.email}</td>
+
+                        <td>{item?.phoneNo ? item?.phoneNo : "-"}</td>
+                        <td>{item?.address ? item?.address : "-"}</td>
                         <td className="d-flex justify-content-evenly ">
                           <EditIcon
                             className="mr-3 courser"
@@ -483,7 +467,7 @@ export default function CustomerList() {
                           />
                           <ClearIcon
                             className="courser text-danger"
-                            onClick={() => warningWithConfirmMessage()}
+                            onClick={() => warningWithConfirmMessage(item)}
                           />
                         </td>
                       </tr>

@@ -1,28 +1,48 @@
 import axiosInstance from "./http-common";
 
 class DataService {
-  //   Login Services
   Login(data) {
     return axiosInstance.post("auth/loginProviderAndAdmin", data);
   }
-  //customer
+
+  UpdateAdmin(data) {
+    return axiosInstance.patch("auth/changeAdminPassword", data);
+  }
+
+  //Customer
+  GetUser() {
+    return axiosInstance.get("auth/all-user");
+  }
+  UpdateCustomer(data) {
+    console.log('data', data)
+    return axiosInstance.patch("auth/updateUserProfile", data);
+  }
+  DeleteCustomer(data) {  
+    console.log('data', data)
+    return axiosInstance.delete("auth/deleteUser", data);
+  }
+
+  //Provider
   GetAllProvider() {
     return axiosInstance.get("provider/allProvider");
   }
   UpdateProvider(data) {
     return axiosInstance.patch("provider/updateProvider", data);
   }
-  UpdateAdmin(data) {
-    return axiosInstance.patch("auth/changeAdminPassword", data);
+  DeleteProvider(data) {
+    return axiosInstance.delete("provider/deleteProvider", data);
   }
   FindProvider(data) {
-    console.log("datafatch",data)
     return axiosInstance.post("/provider/findProviderById", data);
   }
   ProviderImage(data) {
     return axiosInstance.post("/auth/upload", data);
   }
 
+  //Booking
+  Booking() {
+    return axiosInstance.get("/booking/allBooking");
+  }
 }
 
 const DataServices = new DataService();

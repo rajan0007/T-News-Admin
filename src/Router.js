@@ -4,6 +4,7 @@ import Dashboard from "./Dashboard";
 import CustomerList from "./component/CustomerList";
 import Profile from "./component/Profile";
 import ProfessionlList from "./component/ProfessionlList";
+import Booking from "./component/Booking";
 
 export default function Router() {
   return (
@@ -14,6 +15,7 @@ export default function Router() {
         <Route path="/customer-list" element={<CustomerList />} />
         <Route path="/professional-list" element={<ProfessionlList />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/booking" element={<Booking />} />
       </Routes>
     </div>
   );
