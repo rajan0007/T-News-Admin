@@ -27,13 +27,16 @@ export default function Login() {
   return (
     <div className="hold-transition login-page">
       <div class="login-box">
-        <div class="card card-outline card-success">
-          <div class="card-header text-center">
+        <div class="card card-outline" style={{ 
+          borderTop:'3px solid #007bff'
+         
+        }}>
+          <div class="card-header text-center" style={{display:'flex',justifyContent:'center',alignItems:'center'}}>
            
             <img
               src={Logo}
               alt="Logo"
-              style={{ opacity: "0.8", width: "30%", height: "50px" }}
+              style={{ opacity: "0.8", width: "25%", height: "50px" }}
             />
            <p class="h3">
               <b>House-Fix</b>

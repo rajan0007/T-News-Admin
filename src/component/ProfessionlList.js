@@ -280,22 +280,38 @@ export default function ProfessionlList() {
                       </div>
                       <div className="form-group">
                         <label htmlFor="password">Profession</label>
-                        <Field
-                          type="text"
-                          name="profession"
-                          placeholder="profession"
-                          className={`mt-2 form-control
+                        
+                         <Field
+                              name="profession"
+                              as="select"
+                              className={`mt-2 form-control
                           ${
                             touched.profession && errors.profession
                               ? "is-invalid"
                               : ""
                           }`}
-                        />
-                        <ErrorMessage
-                          component="div"
-                          name="profession"
-                          className="invalid-feedback"
-                        />
+                            >
+                              <option value="">Select your Service</option>
+                              <option value="cleaning">Cleaning</option>
+                              <option value="tv_electronics">
+                                TV and Electronics
+                              </option>
+                              <option value="handyman">General Handyman</option>
+                              <option value="furniture_assembly">
+                                Assembly
+                              </option>
+                              <option value="plumbing">Plumbing</option>
+                              <option value="electrical">Electrical</option>
+                              <option value="painting">Painting</option>
+                              <option value="ro_ac">Ro & Ac</option>
+                              <option value="car_washer">Car Washer</option>
+                            </Field>
+                            <ErrorMessage
+                              component="div"
+                              name="profession"
+                              className="invalid-feedback mt-0"
+                              style={{ display: "flex" }}
+                            />
                       </div>
                       <div className="form-group">
                         <label htmlFor="password">City</label>
