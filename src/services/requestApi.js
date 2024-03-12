@@ -14,12 +14,12 @@ class DataService {
     return axiosInstance.get("auth/all-user");
   }
   UpdateCustomer(data) {
-    console.log('data', data)
+    console.log("data", data);
     return axiosInstance.patch("auth/updateUserProfile", data);
   }
-  DeleteCustomer(data) {  
-    console.log('data', data)
-    return axiosInstance.delete("auth/deleteUser", data);
+  DeleteCustomer(data) {
+    console.log("data", data);
+    return axiosInstance.post("auth/deleteUser", data);
   }
 
   //Provider

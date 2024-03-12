@@ -146,7 +146,6 @@ export default function CustomerList() {
       console.log("deleteData response:", data);
       if (data?.status) {
         successDeleted(data?.message);
-        getBranch(); // Refresh data after successful deletion
       } else {
         toast.warning(data?.message);
       }
