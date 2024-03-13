@@ -47,6 +47,7 @@ export default function Profile() {
       .required("Password is required")
       .oneOf([Yup.ref("password"), null], "Passwords must match"),
     address: Yup.string().required("Address is required"),
+    perHourPrice: Yup.string().required("required"),
   });
   const AdminSchema = Yup.object().shape({
     newPassword: Yup.string()
@@ -121,6 +122,7 @@ export default function Profile() {
                       address: tableData ? tableData?.address : "",
                       password: tableData ? tableData?.password : "",
                       cPassword: tableData ? tableData?.password : "",
+                      perHourPrice: tableData ? tableData?.perHourPrice : "",
                     }}
                     validationSchema={LoginSchema}
                     onSubmit={async (values, { resetForm }) => {
@@ -218,7 +220,7 @@ export default function Profile() {
                                     />
                                   </div>
                                 </div>
-                                <div className="col-12">
+                                <div className="col-6">
                                   <div className="form-group">
                                     <label htmlFor="password">Email</label>
                                     <Field
@@ -232,6 +234,24 @@ export default function Profile() {
                                     <ErrorMessage
                                       component="div"
                                       name="email"
+                                      className="invalid-feedback"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="col-6">
+                                  <div className="form-group">
+                                    <label htmlFor="password">Phone No</label>
+                                    <Field
+                                      type="text"
+                                      name="phoneNo"
+                                      placeholder="phoneNo"
+                                      disabled={isEdit ? false : true}
+                                      className={`mt-2 form-control
+                    ${touched.phoneNo && errors.phoneNo ? "is-invalid" : ""}`}
+                                    />
+                                    <ErrorMessage
+                                      component="div"
+                                      name="phoneNo"
                                       className="invalid-feedback"
                                     />
                                   </div>
@@ -310,24 +330,6 @@ export default function Profile() {
                           <div className="row">
                             <div className="col-6">
                               <div className="form-group">
-                                <label htmlFor="password">Phone No</label>
-                                <Field
-                                  type="text"
-                                  name="phoneNo"
-                                  placeholder="phoneNo"
-                                  disabled={isEdit ? false : true}
-                                  className={`mt-2 form-control
-                    ${touched.phoneNo && errors.phoneNo ? "is-invalid" : ""}`}
-                                />
-                                <ErrorMessage
-                                  component="div"
-                                  name="phoneNo"
-                                  className="invalid-feedback"
-                                />
-                              </div>
-                            </div>
-                            <div className="col-6">
-                              <div className="form-group">
                                 <label htmlFor="password">Profession</label>
                                 <Field
                                   type="text"
@@ -344,6 +346,30 @@ export default function Profile() {
                                 <ErrorMessage
                                   component="div"
                                   name="profession"
+                                  className="invalid-feedback"
+                                />
+                              </div>
+                            </div>
+                            <div className="col-6">
+                              <div className="form-group">
+                                <label htmlFor="password">
+                                  Price/ Per Hour
+                                </label>
+                                <Field
+                                  type="text"
+                                  name="perHourPrice"
+                                  placeholder="Price / hour"
+                                  disabled={isEdit ? false : true}
+                                  className={`mt-2 form-control
+                    ${
+                      touched.perHourPrice && errors.perHourPrice
+                        ? "is-invalid"
+                        : ""
+                    }`}
+                                />
+                                <ErrorMessage
+                                  component="div"
+                                  name="perHourPrice"
                                   className="invalid-feedback"
                                 />
                               </div>
