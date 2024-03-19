@@ -94,23 +94,14 @@ export default function Admin() {
     //   });
   };
 
-  const addNewTournament = (value) => {
+  const addNewTournament = async (value) => {
     console.log("addNewTournament value :::", value, openValue, rowValue);
-    // axios(`${API_URL}/api/admin/add-admin-player`, {
-    //   method: "POST",
-    //   credentials: "include",
-    //   data: value,
-    // })
-    //   .then((result) => {
-    //     console.log("handleSubmit result :::", result.data);
-    //     if (result.data.isValid) {
-    //       setButtonLoader(false);
-    //       successAdd(result.data.message);
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log("handleSubmit err :::", err);
-    //   });
+    try {
+      const { res } = await DataServices.AddAdmin(value);
+      console.log('res', res)
+    } catch (error) {
+      
+    }
   };
 
   const warningWithConfirmMessage = (e) => {
@@ -122,11 +113,8 @@ export default function Admin() {
         title="Are you sure?"
         onConfirm={() => {
           deleteData(e);
-          //  setIsPlayerEditButtonClicked(false);
         }}
         onCancel={() => setAlert(null)}
-        // confirmBtnCssClass={classes.button + " " + classes.danger}
-        // cancelBtnCssClass={classes.button + " " + classes.danger}
         confirmBtnBsStyle="success"
         cancelBtnBsStyle="danger"
         confirmBtnText="Yes, delete it!"
@@ -146,24 +134,26 @@ export default function Admin() {
         onConfirm={() => {
           getBranch();
           setAlert(null);
-          // setIsPlayerEditButtonClicked(false);
         }}
         confirmBtnBsStyle="success"
       ></SweetAlert>
     );
   };
 
-  const deleteData = (e) => {
+  const deleteData =async (e) => {
     console.log("e===>", e._id);
     const data = { id: e._id };
-    // axios.post(`${API_URL}/api/admin/delete-admin-player`, data).then((res) => {
-    //   console.log(res);
-    //   console.log(res.data);
-    //   if (res.data.isValid) {
-    //     successDeleted(res.data.message);
-    //   }
-    //   getBranch();
-    // });
+    try {
+      const { data } = await DataServices.DeleteAdmin(data);
+      console.log("deleteData response:", data);
+      if (data?.status) {
+        successDeleted(data?.message);
+      } else {
+        toast.warning(data?.message);
+      }
+    } catch (error) {
+      
+    }
   };
 
   const successAdd = (msg) => {
@@ -217,17 +207,17 @@ export default function Admin() {
                 }}
                 validationSchema={LoginSchema}
                 onSubmit={(values) => {
-                  setButtonLoader(true);
+                  // setButtonLoader(true);
                   delete values.confirmPassword;
                   console.log("update formik value :::", values, openValue);
-                  if (openValue == 1) {
-                    console.log("update formik value :::", openValue);
-                    addNewTournament(values);
-                  }
-                  if (openValue == 2) {
-                    console.log("update formik value :::", openValue);
-                    updateTournament(values);
-                  }
+                  // if (openValue == 1) {
+                  //   console.log("update formik value :::", openValue);
+                  //   addNewTournament(values);
+                  // }
+                  // if (openValue == 2) {
+                  //   console.log("update formik value :::", openValue);
+                  //   updateTournament(values);
+                  // }
                 }}
               >
                 {({ touched, errors, isSubmitting, values, setFieldValue }) => (
@@ -236,7 +226,7 @@ export default function Admin() {
                       <div className="form-group">
                         <label htmlFor="password">Email</label>
                         <Field
-                          disabled
+                          
                           type="email"
                           name="email"
                           placeholder="Email"
