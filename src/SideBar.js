@@ -114,7 +114,12 @@ export default function SideBar() {
                   id="profile"
                   style={{ cursor: "pointer" }}
                   onClick={() => {
-                    history("/profile");
+                    if (isPro == "Admin") {
+                      history("/admin");
+                    } else {
+                      history("/profile");
+                    }
+                    
                     setActive1(true);
                     setActive2(true);
                     setActive3(true);
@@ -127,7 +132,11 @@ export default function SideBar() {
                   }}
                 >
                   <PersonIcon className="mr-2" style={{ color: "white" }} />
-                  <p style={{ color: "white" }}>Profile</p>
+                  <p style={{ color: "white" }}>
+                    
+                    {isPro == "Admin" && "Admin"}
+                    {isPro == "Provider" && "Profile"}
+                    </p>
                 </p>
               </div>
               {isPro != "Provider" && (

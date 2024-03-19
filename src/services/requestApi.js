@@ -46,6 +46,20 @@ class DataService {
   Booking() {
     return axiosInstance.get("/booking/allBooking");
   }
+
+  //Admin
+  GetAllAdmin() {
+    return axiosInstance.get("auth/all-admin");
+  }
+  DeleteAdmin(data) {
+    return axiosInstance.post("auth/deleteAdmin", data);
+  }
+  UpdateAdmin(data) {
+    return axiosInstance.patch("auth/updateAdminProfile", data);
+  }
+  AddAdmin(data) {
+    return axiosInstance.post("auth/addAdmin", data);
+  }
 }
 
 const DataServices = new DataService();
