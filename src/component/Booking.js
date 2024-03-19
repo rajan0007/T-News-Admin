@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import ClearIcon from "@mui/icons-material/Clear";
 import Box from "@mui/material/Box";
+
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import AddIcon from "@mui/icons-material/Add";
@@ -9,11 +11,13 @@ import axios from "axios";
 import SweetAlert from "react-bootstrap-sweetalert";
 import { toast } from "react-toastify";
 import DataServices from "../services/requestApi";
+import { Button, Modal } from "react-bootstrap";
 
 export default function Booking() {
   const [showPage, setShowPage] = useState(false);
   const [alert, setAlert] = React.useState(null);
   const [tableData, setTableData] = React.useState([]);
+  const [info, setInfo] = useState([]);
   const [searchSubType] = React.useState();
   const [rowValue, setRowValue] = React.useState();
   const [openValue, setOpenValue] = React.useState(0);
@@ -190,7 +194,7 @@ export default function Booking() {
       ></SweetAlert>
     );
   };
-
+  const [modalShow, setModalShow] = useState(false);
   return (
     <>
       {alert}
@@ -438,16 +442,17 @@ export default function Booking() {
                 <thead>
                   <tr>
                     <th>SrNo</th>
-                    <th>User name</th>
-                    <th>Email</th>
-                    <th>Phone No</th>
+                    <th>Customer Name</th>
+                    <th>Service Name</th>
                     <th>Professionals No</th>
+                    {/* <th>Provider Name</th> */}
                     <th>Ladder</th>
                     <th>Date</th>
                     <th>Hours</th>
                     <th>time</th>
-                    <th>Description</th>
+                    <th>Address</th>
                     <th>zipCode</th>
+                    <th>Info</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -457,36 +462,199 @@ export default function Booking() {
                       <tr>
                         <td>{i + 1}</td>
                         <td>
-                          {item?.firstName} {item?.lastName}
+                          {item?.customerId?.firstName}{" "}
+                          {item?.customerId?.lastName}
                         </td>
-                        <td>{item?.email}</td>
-                        <td>{item?.phoneNo ? item?.phoneNo : "-"}</td>
-                        <td>{item?.professionalsNo ? item?.professionalsNo : "-"}</td>
-                        <td>{item?.ladder ? item?.ladder : "-"}</td>
-                        <td>{item?.date ? item?.date : "-"}</td>
-                        <td>{item?.hours ? item?.hours : "-"}</td>
-                        <td>{item?.time ? item?.time : "-"}</td>
-                        <td>{item?.desc ? item?.desc : "-"}</td>
-                        <td>{item?.zipCode ? item?.zipCode : "-"}</td>
-                        <td className="d-flex justify-content-evenly ">
-                          <EditIcon
-                            className="mr-3 courser"
+                        <td>{item?.serviceName}</td>
+                        <td>{item?.providerId.length || "-"}</td>
+                        {/* <td>{item?.providerId.map((provider,i) => (<>{i+1} - {provider.firstName}<br/></>))}</td> */}
+                        <td>{item?.ladder || "-"}</td>
+                        <td>{item?.date || "-"}</td>
+                        <td>{`${item.totalHour} /hr ` || "-"}</td>
+                        <td>{item?.time || "-"}</td>
+                        <td>{item?.customerId?.address || "-"}</td>
+                        <td>{item?.zipcode || "-"}</td>
+                        <td className="d-flex justify-content-center ">
+                          <VisibilityIcon
+                            className="courser" 
+                            style={{ color: "#4caf50" }}
                             onClick={() => {
-                            //   setShowPage(!showPage);
-                            //   clickEditButton();
+                              setModalShow(true);
+                              setInfo(item);
                             }}
                           />
-                          <ClearIcon
-                            className="courser text-danger"
-                            onClick={() => warningWithConfirmMessage()}
-                          />
+                        </td>
+                        <td>
+                          <div className="d-flex justify-content-evenly ">
+                            <EditIcon
+                              className="mr-3 courser"
+                              // onClick={() => {
+                              //   setShowPage(!showPage);
+                              //   clickEditButton(item);
+                              // }}
+                            />
+                            <ClearIcon
+                              className="courser text-danger"
+                              // onClick={() => warningWithConfirmMessage(item)}
+                            />
+                          </div>
                         </td>
                       </tr>
                     </>
                   ))}
                 </tbody>
               </table>
-              <div className="mt-4">{loader && "Loading..."}</div>
+              <Modal
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                show={modalShow}
+              >
+                <Modal.Header>
+                  <Modal.Title
+                    id="contained-modal-title-vcenter"
+                    style={{ margin: "0px" }}
+                  >
+                    Booking Information
+                  </Modal.Title>
+                  <div>
+                    <ClearIcon  className="courser" onClick={() => setModalShow(false)} />
+                  </div>
+                </Modal.Header>
+                <Modal.Body>
+                  <div className="row">
+                    <div
+                      className="col-4"
+                      style={{ borderRight: "2px solid #CACACA" }}
+                    >
+                      {console.log("info", info)}
+                      <h3 style={{ fontSize: "18px" }}>Customer Details</h3>
+                      <div className="card mt-2" style={{ width: "15rem" }}>
+                        <div className="card-body">
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <img
+                              src={info?.customerId?.image}
+                              className="rounded-50"
+                              alt="Your Image"
+                              style={{ width: "50px", height: "50px" }}
+                            />
+                          </div>
+                          <h5
+                            className="card-subtitle mb-2 text-body-secondary mt-3"
+                            style={{ fontSize: "16px" }}
+                          >
+                            Name :{info?.customerId?.firstName}{" "}
+                            {info?.customerId?.lastName}
+                          </h5>
+                          <p className="card-subtitle mb-2 text-body-secondary mt-3">
+                            <span style={{ fontWeight: "600" }}>Address :</span>{" "}
+                            {info?.customerId?.address},{info?.customerId?.city}
+                            ,{info?.customerId?.state}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-8">
+                      <h3 style={{ fontSize: "18px", textAlign: "center" }}>
+                        Profession Details
+                      </h3>
+                      <div className="row">
+                        {info?.providerId?.map((item, i) => (
+                          <div className="col-6">
+                            <div className="card" style={{ width: "15rem" }}>
+                              <div className="card-body">
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <img
+                                    src={item.image}
+                                    className="rounded-50"
+                                    alt="Your Image"
+                                    style={{ width: "50px", height: "50px" }}
+                                  />
+                                  <h5 className="card-title">
+                                    Price : {item.perHourPrice}/hr
+                                  </h5>
+                                </div>
+                                <h5
+                                  className="card-subtitle mb-2 text-body-secondary mt-3"
+                                  style={{ fontSize: "16px" }}
+                                >
+                                  Name : {item.firstName} {item.lastName}
+                                </h5>
+                                <p className="card-subtitle mb-2 text-body-secondary mt-3">
+                                  <span style={{ fontWeight: "600" }}>
+                                    Profession :
+                                  </span>{" "}
+                                  {item.profession}
+                                </p>
+                                <p className="card-subtitle mb-2 text-body-secondary mt-3">
+                                  <span style={{ fontWeight: "600" }}>
+                                    Phone No :
+                                  </span>{" "}
+                                  {item.phoneNo}
+                                </p>
+                                <p className="card-subtitle mb-2 text-body-secondary mt-3">
+                                  <span style={{ fontWeight: "600" }}>
+                                    Address :
+                                  </span>{" "}
+                                  {item.address},{item.city},{item.state}
+                                </p>
+
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  <span className="stars">
+                                    <div
+                                      className="fas fa-star"
+                                      style={{ fontSize: "12px" }}
+                                    />
+                                    <div
+                                      className="fas fa-star"
+                                      style={{ fontSize: "12px" }}
+                                    />
+                                    <div
+                                      className="fas fa-star"
+                                      style={{ fontSize: "12px" }}
+                                    />
+                                    <div
+                                      className="fas fa-star"
+                                      style={{ fontSize: "12px" }}
+                                    />
+                                    <div className="fas fa-star-half-empty" />
+                                    <br />
+                                    <a
+                                      className="review_count"
+                                      href="#customer-reviews"
+                                      style={{ fontSize: "12px" }}
+                                    >
+                                      685,501 Reviews
+                                    </a>
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </Modal.Body>
+              </Modal>
             </div>
           </div>
         </div>

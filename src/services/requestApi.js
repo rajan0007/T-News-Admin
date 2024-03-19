@@ -38,6 +38,9 @@ class DataService {
   ProviderImage(data) {
     return axiosInstance.post("/auth/upload", data);
   }
+  GetProviderBooking(data) {
+    return axiosInstance.post("/booking/getProviderById", data);
+  }
 
   //Booking
   Booking() {

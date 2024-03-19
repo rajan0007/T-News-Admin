@@ -215,33 +215,59 @@ export default function SideBar() {
                   </ul>
                 </li>
               )}
-
-              <div className="nav-item">
-                <p
-                  className={`nav-link ${
-                    window.location.pathname.split("/")[1] === "booking" &&
-                    "active"
-                  }`}
-                  id="booking"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => {
-                    history("/booking");
-                    setActive1(true);
-                    setActive2(true);
-                    setActive3(true);
-                    setActive4(true);
-                    setActive5(true);
-                    setActive9(true);
-                    setActive6(true);
-                    setActive7(true);
-                    setActive8(true);
-                  }}
-                >
-                  <PostAddIcon className="mr-2" style={{ color: "white" }} />
-                  <p style={{ color: "white" }}>Booking</p>
-                </p>
-              </div>
-
+              {isPro != "Provider" && (
+               <div className="nav-item">
+               <p
+                 className={`nav-link ${
+                   window.location.pathname.split("/")[1] === "booking" &&
+                   "active"
+                 }`}
+                 id="booking"
+                 style={{ cursor: "pointer" }}
+                 onClick={() => {
+                   history("/booking");
+                   setActive1(true);
+                   setActive2(true);
+                   setActive3(true);
+                   setActive4(true);
+                   setActive5(true);
+                   setActive9(true);
+                   setActive6(true);
+                   setActive7(true);
+                   setActive8(true);
+                 }}
+               >
+                 <PostAddIcon className="mr-2" style={{ color: "white" }} />
+                 <p style={{ color: "white" }}>Booking</p>
+               </p>
+             </div>
+              )}
+              {isPro != "Admin" && (
+                <div className="nav-item">
+                  <p
+                    className={`nav-link ${window.location.pathname.split("/")[1] ===
+                      "booking-request" && "active"
+                      }`}
+                    id="booking-request"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      history("/booking-request");
+                      setActive1(true);
+                      setActive2(true);
+                      setActive3(true);
+                      setActive4(true);
+                      setActive5(true);
+                      setActive9(true);
+                      setActive6(true);
+                      setActive7(true);
+                      setActive8(true);
+                    }}
+                  >
+                    <PostAddIcon className="mr-2" style={{ color: "white" }} />
+                    <p style={{ color: "white" }}>Booking</p>
+                  </p>
+                </div>
+              )}
               {isPro != "Provider" && (
                 <div className="nav-item">
                   <p
