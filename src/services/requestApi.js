@@ -30,7 +30,7 @@ class DataService {
     return axiosInstance.patch("provider/updateProvider", data);
   }
   DeleteProvider(data) {
-    return axiosInstance.delete("provider/deleteProvider", data);
+    return axiosInstance.post("provider/deleteProvider", data);
   }
   FindProvider(data) {
     return axiosInstance.post("/provider/findProviderById", data);
