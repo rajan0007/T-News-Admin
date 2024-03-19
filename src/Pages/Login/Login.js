@@ -27,18 +27,26 @@ export default function Login() {
   return (
     <div className="hold-transition login-page">
       <div class="login-box">
-        <div class="card card-outline" style={{ 
-          borderTop:'3px solid #007bff'
-         
-        }}>
-          <div class="card-header text-center" style={{display:'flex',justifyContent:'center',alignItems:'center'}}>
-           
+        <div
+          class="card card-outline"
+          style={{
+            borderTop: "3px solid #007bff",
+          }}
+        >
+          <div
+            class="card-header text-center"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <img
               src={Logo}
               alt="Logo"
               style={{ opacity: "0.8", width: "25%", height: "50px" }}
             />
-           <p class="h3">
+            <p class="h3">
               <b>House-Fix</b>
             </p>
           </div>
@@ -60,13 +68,22 @@ export default function Login() {
                   if (data?.status) {
                     setAuthenticated(true);
                     toast.success(data?.message);
-                    console.log("data?.data?",data?.data?.data._id)
-                    sessionStorage.setItem("user", JSON.stringify(data?.data?.data._id));
+                    console.log("data?.data?", data?.data?.data._id);
+                    sessionStorage.setItem(
+                      "user",
+                      JSON.stringify(data?.data?.data.id)
+                    );
+                    sessionStorage.setItem("token", data?.data?.data?.token);
                     sessionStorage.setItem("role", data?.data?.role);
+                    console.log(
+                      " data?.data?.data?.token;::: ",
+                      data?.data?.data?.token
+                    );
 
-                    // axiosInstance.defaults.headers.token = data?.data?.token;
+                    axiosInstance.defaults.headers.token =
+                      data?.data?.data?.token;
                     history("/dashboard");
-                   
+
                     setButtonLoader(false);
                   } else {
                     toast.warning(data?.message);

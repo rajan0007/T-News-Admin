@@ -15,6 +15,7 @@ import user_icon from "../img/user.png";
 export default function Profile() {
   const isPro = sessionStorage.getItem("role");
   const user = JSON.parse(sessionStorage.getItem("user"));
+  console.log("user::: ", user);
   console.log("user", user);
 
   const [showPage, setShowPage] = useState(false);

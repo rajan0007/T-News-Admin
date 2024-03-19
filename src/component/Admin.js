@@ -40,9 +40,12 @@ export default function Admin() {
     setPagination({ start: 0, end: value });
   };
   const LoginSchema = Yup.object().shape({
-    name: Yup.string().required("required"),
     email: Yup.string().required("required"),
     password: Yup.string().required("required"),
+    oldPassword: Yup.string().required("required"),
+    confirmPassword: Yup.string()
+      .required("required")
+      .oneOf([Yup.ref("password"), null], "Passwords must match"),
   });
 
   const getBranch = async () => {
@@ -51,25 +54,11 @@ export default function Admin() {
       const { data } = await DataServices.GetAllAdmin();
       setLoader(false);
       console.log("data", data);
-      setTableData(data?.data[0]);
+      setTableData(data?.data);
     } catch (e) {
       toast.error(e.data.message);
     }
   };
-
-  const searchingData = [];
-  let data = [];
-  console.log("tableData 111 ---", tableData, searchTourName);
-  if (searchTourName) {
-    console.log("tableData 222 ---", tableData, tableData.length > 0);
-    data = tableData.filter((item) => {
-      return Object.values(item?.email).join("").includes(searchTourName);
-    });
-    console.log("data 111 ---", data);
-    data?.map((dataItem) => searchingData.push(dataItem));
-  } else {
-    tableData.map((dataItem) => searchingData.push(dataItem));
-  }
 
   const clickEditButton = (item) => {
     console.log("item edit value :::", item);
@@ -221,13 +210,15 @@ export default function Admin() {
             <Box sx={{ width: "100%" }}>
               <Formik
                 initialValues={{
-                  name: rowValue ? rowValue?.name : "",
                   email: rowValue ? rowValue?.email : "",
                   password: rowValue ? rowValue?.password : "",
+                  oldPassword: rowValue ? rowValue?.oldPassword : "",
+                  confirmPassword: "",
                 }}
                 validationSchema={LoginSchema}
                 onSubmit={(values) => {
                   setButtonLoader(true);
+                  delete values.confirmPassword;
                   console.log("update formik value :::", values, openValue);
                   if (openValue == 1) {
                     console.log("update formik value :::", openValue);
@@ -243,23 +234,9 @@ export default function Admin() {
                   <div>
                     <Form>
                       <div className="form-group">
-                        <label htmlFor="password">Name</label>
-                        <Field
-                          type="text"
-                          name="name"
-                          placeholder="Name"
-                          className={`mt-2 form-control
-                          ${touched.name && errors.name ? "is-invalid" : ""}`}
-                        />
-                        <ErrorMessage
-                          component="div"
-                          name="name"
-                          className="invalid-feedback"
-                        />
-                      </div>
-                      <div className="form-group">
                         <label htmlFor="password">Email</label>
                         <Field
+                          disabled
                           type="email"
                           name="email"
                           placeholder="Email"
@@ -272,6 +249,26 @@ export default function Admin() {
                           className="invalid-feedback"
                         />
                       </div>
+                      <div className="form-group">
+                        <label htmlFor="password">Old Password</label>
+                        <Field
+                          type="text"
+                          name="oldPassword"
+                          placeholder="Password"
+                          className={`mt-2 form-control
+                          ${
+                            touched.oldPassword && errors.oldPassword
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                        />
+                        <ErrorMessage
+                          component="div"
+                          name="oldPassword"
+                          className="invalid-feedback"
+                        />
+                      </div>
+
                       <div className="form-group">
                         <label htmlFor="password">Password</label>
                         <Field
@@ -288,6 +285,25 @@ export default function Admin() {
                         <ErrorMessage
                           component="div"
                           name="password"
+                          className="invalid-feedback"
+                        />
+                      </div>
+                      <div className="form-group">
+                        <label htmlFor="password">Confirm Password</label>
+                        <Field
+                          type="text"
+                          name="confirmPassword"
+                          placeholder="Password"
+                          className={`mt-2 form-control
+                          ${
+                            touched.confirmPassword && errors.confirmPassword
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                        />
+                        <ErrorMessage
+                          component="div"
+                          name="confirmPassword"
                           className="invalid-feedback"
                         />
                       </div>
@@ -329,6 +345,7 @@ export default function Admin() {
                           style={{ width: "100px" }}
                           type="button"
                           className="btn btn-secondary btn-block mt-4 ms-2"
+                          onClick={() => setShowPage(false)}
                         >
                           Close
                         </button>
@@ -395,25 +412,24 @@ export default function Admin() {
                     <th>Action</th>
                   </tr>
                 </thead>
-                  <tbody>
-                    {}
-                  {searchingData.map((item, i) => (
+                <tbody>
+                  {tableData?.map((item, i) => (
                     <tr>
                       <td>{i + 1}</td>
                       <td>{item.email}</td>
                       <td className="d-flex justify-content-evenly ">
-                          <EditIcon
-                            className="mr-3 courser"
-                            onClick={() => {
-                              setShowPage(!showPage);
-                              clickEditButton(item);
-                            }}
-                          />
-                          <ClearIcon
-                            className="courser text-danger"
-                            onClick={() => warningWithConfirmMessage(item)}
-                          />
-                        </td>
+                        <EditIcon
+                          className="mr-3 courser"
+                          onClick={() => {
+                            setShowPage(!showPage);
+                            clickEditButton(item);
+                          }}
+                        />
+                        <ClearIcon
+                          className="courser text-danger"
+                          onClick={() => warningWithConfirmMessage(item)}
+                        />
+                      </td>
                     </tr>
                   ))}
                 </tbody>

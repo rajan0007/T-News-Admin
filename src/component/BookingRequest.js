@@ -1,19 +1,20 @@
 import React from "react";
 import DataServices from "../services/requestApi";
+import { toast } from "react-toastify";
 
 export default function BookingRequest() {
-  const getBookingReq =async () => {
+  const getBookingReq = async () => {
     try {
       const { data } = await DataServices.GetProviderBooking();
       if (data?.status) {
         toast.success(data?.message);
-        setIsEdit(false);
-        getBranch();
+        // setIsEdit(false);
+        // getBranch();
       } else {
         toast.warning(data?.message);
       }
     } catch (error) {}
-  }
+  };
   return (
     <>
       <div className="content p-3">

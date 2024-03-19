@@ -8,6 +8,9 @@ class DataService {
   UpdateAdmin(data) {
     return axiosInstance.patch("auth/changeAdminPassword", data);
   }
+  TokenVerify() {
+    return axiosInstance.get("/auth/token-verify");
+  }
 
   //Customer
   GetUser() {

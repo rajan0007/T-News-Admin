@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 // import Dashboard from "./Dashboard";
 import Footer from "./Footer";
@@ -63,6 +63,26 @@ function App() {
   //     console.log("error::: ", error);
   //   }
   // };
+
+  useEffect(() => {
+    tokenVerify();
+  }, []);
+
+  const tokenVerify = async () => {
+    try {
+      const { data } = await DataServices.TokenVerify();
+      console.log("data::: ", data);
+      if (data?.isValid) {
+        // axiosInstance.defaults.headers.token = data?.token;
+        setAuthenticated(true);
+        console.log("data::: ", data);
+      } else {
+        setAuthenticated(false);
+      }
+    } catch (e) {
+      console.log("e::: ", e);
+    }
+  };
 
   return (
     <div className="wrapper">
