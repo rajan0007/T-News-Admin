@@ -119,6 +119,7 @@ export default function SideBar() {
                     } else {
                       history("/profile");
                     }
+                    // history("/profile");
                     
                     setActive1(true);
                     setActive2(true);
@@ -134,8 +135,8 @@ export default function SideBar() {
                   <PersonIcon className="mr-2" style={{ color: "white" }} />
                   <p style={{ color: "white" }}>
                     
-                    {isPro == "Admin" && "Admin"}
-                    {isPro == "Provider" && "Profile"}
+                   
+                    Profile
                     </p>
                 </p>
               </div>

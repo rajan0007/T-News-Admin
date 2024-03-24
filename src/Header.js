@@ -76,24 +76,7 @@ export default function Header() {
                 }}
                 className="border p-2"
               >
-                <button
-                  className="dropdown-item btn"
-                  onClick={() => {
-                    history("/change-password");
-                    setAuthenticated(false);
-                  }}
-                >
-                  Change Password
-                </button>
-                <button
-                  className="dropdown-item btn"
-                  onClick={() => {
-                    history("/change-email");
-                    setAuthenticated(false);
-                  }}
-                >
-                  Change Email
-                </button>
+                
                 <button
                   className="dropdown-item btn "
                   onClick={() => {

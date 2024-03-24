@@ -6,11 +6,15 @@ import { BASEURL } from "../config";
 import SweetAlert from "react-bootstrap-sweetalert";
 import { Modal } from "react-bootstrap";
 import ClearIcon from "@mui/icons-material/Clear";
-
+import Loader from "../Loader/Loader";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 export default function BookingRequest() {
   const [tableData, setTableData] = useState([]);
   const [alert, setAlert] = React.useState(null);
   const [modalShow, setModalShow] = useState(false);
+  const [modalShow1, setModalShow1] = useState(false);
+  const [info, setInfo] = useState([]);
+
   const [rowValue, setRowValue] = useState([]);
 
   const [otp, setOtp] = useState(new Array(6).fill(""));
@@ -60,6 +64,7 @@ export default function BookingRequest() {
             toast.success(res.data?.message);
             setModalShow(false);
             getBookingReq();
+            setIsLoading(false);
           } else {
             toast.error(res.data?.message);
           }
@@ -188,7 +193,25 @@ export default function BookingRequest() {
                       <td>{item?.time || "-"}</td>
                       <td>{item?.customerId?.address || "-"}</td>
                       <td>{item?.zipcode || "-"}</td>
-                      <td>{item?.status || "-"}</td>
+                      <td>
+                        <button
+                          className={`btn ${
+                            item?.status === "Success"
+                              ? "btn-outline-success"
+                              : "btn-outline-secondary"
+                          }`}
+                          disabled={
+                            item?.status === "Success" ||
+                            item?.status === "Pending"
+                          }
+                        >
+                          {item?.status === "Success"
+                            ? "Success"
+                            : item?.status === "Pending"
+                            ? "Pending"
+                            : "Pending"}
+                        </button>
+                      </td>
                       {item?.status != "Success" && (
                         <td>
                           <button
@@ -199,7 +222,20 @@ export default function BookingRequest() {
                           </button>
                         </td>
                       )}
-                      {item?.status != "Pending" && <td>-</td>}
+                      {item?.status != "Pending" && (
+                        <td>
+                          <div className="d-flex justify-content-center">
+                            <VisibilityIcon
+                              className="courser"
+                              style={{ color: "#dc3545" }}
+                              onClick={() => {
+                                setModalShow1(true);
+                                setInfo(item);
+                              }}
+                            />
+                          </div>
+                        </td>
+                      )}
                     </tr>
                   </>
                 ))}
@@ -273,6 +309,75 @@ export default function BookingRequest() {
               >
                 Submit
               </button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+      <Modal
+        size="md"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        show={modalShow1}
+      >
+        <Modal.Header>
+          <Modal.Title
+            id="contained-modal-title-vcenter"
+            style={{ margin: "0px" }}
+          >
+            Customer Details
+          </Modal.Title>
+          <div>
+            <ClearIcon
+              className="courser"
+              onClick={() => setModalShow1(false)}
+            />
+          </div>
+        </Modal.Header>
+        <Modal.Body className="d-flex justify-content-center">
+          {console.log("info", info)}
+          <div className="">
+            {console.log("info", info)}
+            <div className="card mt-2" style={{ width: "20rem" }}>
+              <div className="card-body">
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <img
+                    src={info?.customerId?.image}
+                    className="rounded-50"
+                    alt="Your Image"
+                    style={{ width: "50px", height: "50px" }}
+                  />
+                </div>
+                <h5
+                  className="card-subtitle mb-2 text-body-secondary mt-3"
+                  style={{ fontSize: "16px" }}
+                >
+                  Name : &nbsp;{info?.customerId?.firstName || "-"}{" "}
+                  {info?.customerId?.lastName || "-"}
+                </h5>
+                <h6
+                  className="card-subtitle mb-2 text-body-secondary mt-3"
+                  style={{ fontSize: "16px" }}
+                >
+                  Email : &nbsp;{info?.customerId?.email || "-"}
+                </h6>
+                <h6
+                  className="card-subtitle mb-2 text-body-secondary mt-3"
+                  style={{ fontSize: "16px" }}
+                >
+                  Phone No. : &nbsp;{info?.customerId?.phoneNo || "-"}
+                </h6>
+                <p className="card-subtitle mb-2 text-body-secondary mt-3">
+                  <span style={{ fontWeight: "600" }}>Address :</span>{" "}&nbsp;
+                  {info?.customerId?.address|| "-"},&nbsp;{info?.customerId?.city || "-"},&nbsp;
+                  {info?.customerId?.state || "-"}
+                </p>
+              </div>
             </div>
           </div>
         </Modal.Body>

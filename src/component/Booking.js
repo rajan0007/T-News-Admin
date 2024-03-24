@@ -474,7 +474,7 @@ export default function Booking() {
                         <td>{item?.time || "-"}</td>
                         <td>{item?.customerId?.address || "-"}</td>
                         <td>{item?.zipcode || "-"}</td>
-                        <td className="d-flex justify-content-center ">
+                        <td className="d-flex justify-content-center">
                           <VisibilityIcon
                             className="courser" 
                             style={{ color: "#4caf50" }}

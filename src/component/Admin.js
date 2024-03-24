@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import ClearIcon from "@mui/icons-material/Clear";
 import Box from "@mui/material/Box";
@@ -9,8 +9,10 @@ import axios from "axios";
 import SweetAlert from "react-bootstrap-sweetalert";
 import Loader from "../Loader/Loader";
 import moment from "moment";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import DataServices from "../services/requestApi";
 import { toast } from "react-toastify";
+
 
 export default function Admin() {
   const [alert, setAlert] = React.useState(null);
@@ -28,9 +30,7 @@ export default function Admin() {
     end: showPrePage,
   });
 
-  React.useEffect(() => {
-    getBranch();
-  }, []);
+ 
 
   const onPaginationChange = (start, end) => {
     setPagination({ start: start, end: end });
@@ -39,7 +39,14 @@ export default function Admin() {
     setShowPrePage(value);
     setPagination({ start: 0, end: value });
   };
-  const LoginSchema = Yup.object().shape({
+  const addSchema = Yup.object().shape({
+    email: Yup.string().required("required"),
+    password: Yup.string().required("required"),
+    confirmPassword: Yup.string()
+      .required("required")
+      .oneOf([Yup.ref("password"), null], "Passwords must match"),
+  });
+  const editSchema = Yup.object().shape({
     email: Yup.string().required("required"),
     password: Yup.string().required("required"),
     oldPassword: Yup.string().required("required"),
@@ -48,15 +55,19 @@ export default function Admin() {
       .oneOf([Yup.ref("password"), null], "Passwords must match"),
   });
 
+  useEffect(() => {
+    getBranch();
+  }, []);
+
   const getBranch = async () => {
     setLoader(true);
     try {
       const { data } = await DataServices.GetAllAdmin();
+      setTableData(data?.data || []);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to fetch data");
+    } finally {
       setLoader(false);
-      console.log("data", data);
-      setTableData(data?.data);
-    } catch (e) {
-      toast.error(e.data.message);
     }
   };
 
@@ -66,42 +77,41 @@ export default function Admin() {
     setOpenValue(2);
   };
 
-  const openAddTournament = (value) => {
+  const openAddAdmin = (value) => {
     setRowValue();
-    console.log("openAddTournament :::", value);
+    console.log("openAddAdmin :::", value);
     setShowPage(true);
     setOpenValue(value);
   };
 
-  const updateTournament = (value) => {
+  const updateAdmin =async (value) => {
     console.log("updateTournament value :::", value);
-    const data = { ...value, id: rowValue._id };
-
-    // axios
-    //   .post(`${API_URL}/api/admin/update-admin-player-access`, data)
-    //   .then((res) => {
-    //     console.log("update :::", res.data);
-
-    //     if (res.data.isValid) {
-    //       setButtonLoader(false);
-
-    //       successEdit(res.data.message);
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log("update err :::", err);
-    //     setButtonLoader(false);
-    //   });
+    const data = { value };
+    try {
+      const { res } = await DataServices.UpdateAdmin(data);
+      console.log('res', res);
+      // if (res.isValid) {
+      //   successAdd(res.message);
+      // }
+    } catch (error) {
+      console.error("Error adding new tournament:", error);
+    }
+   
   };
 
-  const addNewTournament = async (value) => {
+  const addNewAdmin = async (value) => {
     console.log("addNewTournament value :::", value, openValue, rowValue);
-    try {
-      const { res } = await DataServices.AddAdmin(value);
-      console.log('res', res)
-    } catch (error) {
-      
-    }
+    console.log('value', value)
+    
+    // try {
+    //   const { res } = await DataServices.AddAdmin(value);
+    //   console.log('res', res);
+    //   // if (res.isValid) {
+    //   //   successAdd(res.message);
+    //   // }
+    // } catch (error) {
+    //   console.error("Error adding new tournament:", error);
+    // }
   };
 
   const warningWithConfirmMessage = (e) => {
@@ -142,9 +152,9 @@ export default function Admin() {
 
   const deleteData =async (e) => {
     console.log("e===>", e._id);
-    const data = { id: e._id };
+    const dto = { id: e._id };
     try {
-      const { data } = await DataServices.DeleteAdmin(data);
+      const { data } = await DataServices.DeleteAdmin(dto);
       console.log("deleteData response:", data);
       if (data?.status) {
         successDeleted(data?.message);
@@ -201,23 +211,24 @@ export default function Admin() {
               <Formik
                 initialValues={{
                   email: rowValue ? rowValue?.email : "",
-                  password: rowValue ? rowValue?.password : "",
-                  oldPassword: rowValue ? rowValue?.oldPassword : "",
+                  password:  "",
+                  oldPassword: "",
                   confirmPassword: "",
                 }}
-                validationSchema={LoginSchema}
+                validationSchema={openValue == 1 ?addSchema : editSchema}
                 onSubmit={(values) => {
                   // setButtonLoader(true);
                   delete values.confirmPassword;
                   console.log("update formik value :::", values, openValue);
-                  // if (openValue == 1) {
-                  //   console.log("update formik value :::", openValue);
-                  //   addNewTournament(values);
-                  // }
-                  // if (openValue == 2) {
-                  //   console.log("update formik value :::", openValue);
-                  //   updateTournament(values);
-                  // }
+                  if (openValue == 1) {
+                  delete values.oldPassword;
+                    console.log("add formik value :::", openValue);
+                    addNewAdmin(values);
+                  }
+                  if (openValue == 2) {
+                    console.log("update formik value :::", openValue, values);
+                    updateAdmin(values);
+                  }
                 }}
               >
                 {({ touched, errors, isSubmitting, values, setFieldValue }) => (
@@ -230,6 +241,7 @@ export default function Admin() {
                           type="email"
                           name="email"
                           placeholder="Email"
+                          disabled={openValue == 2 }
                           className={`mt-2 form-control
                           ${touched.email && errors.email ? "is-invalid" : ""}`}
                         />
@@ -239,7 +251,7 @@ export default function Admin() {
                           className="invalid-feedback"
                         />
                       </div>
-                      <div className="form-group">
+                      {openValue == 2 && <div className="form-group">
                         <label htmlFor="password">Old Password</label>
                         <Field
                           type="text"
@@ -257,8 +269,7 @@ export default function Admin() {
                           name="oldPassword"
                           className="invalid-feedback"
                         />
-                      </div>
-
+                      </div> }
                       <div className="form-group">
                         <label htmlFor="password">Password</label>
                         <Field
@@ -370,7 +381,7 @@ export default function Admin() {
                   <button
                     style={{ width: "118px" }}
                     onClick={() => {
-                      openAddTournament(1);
+                      openAddAdmin(1);
                     }}
                     type="button"
                     className="btn btn-primary btn-block "
@@ -379,7 +390,7 @@ export default function Admin() {
                     Add New
                   </button>
                 </div>
-                <div className="mt-2 col-md-6 col-lg-6 d-flex justify-content-start justify-content-lg-end">
+                {/* <div className="mt-2 col-md-6 col-lg-6 d-flex justify-content-start justify-content-lg-end">
                   <div>
                     <input
                       class="input-simple"
@@ -389,7 +400,7 @@ export default function Admin() {
                       onChange={(e) => setSearchTourName(e.target.value)}
                     />
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
 
