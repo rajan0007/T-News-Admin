@@ -8,6 +8,7 @@ import Booking from "./component/Booking";
 import BookingRequest from "./component/BookingRequest";
 import Admin from "./component/Admin";
 import Payment from "./component/Payment";
+import Blog from "./component/Blog";
 
 export default function Router() {
   return (
@@ -21,6 +22,7 @@ export default function Router() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/booking" element={<Booking />} />
         <Route path="/payment" element={<Payment />} />
+        <Route path="/blog" element={<Blog />} />
         <Route path="/booking-request" element={<BookingRequest />} />
       </Routes>
     </div>
