@@ -144,17 +144,6 @@ export default function Login() {
                         className="invalid-feedback"
                       />
                     </div>
-                    <p
-                      className="mb-0"
-                      style={{
-                        textAlign: "end",
-                        color: "#25124d",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => history("/forgot-password")}
-                    >
-                      Forgot Password?
-                    </p>
 
                     <button
                       style={{ width: "100px" }}

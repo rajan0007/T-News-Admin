@@ -422,17 +422,8 @@ export default function Booking() {
           <div class="card ">
             <div class="pl-4 pr-4 pt-4">
               <div className="row">
-                <div className="col-md-6 col-lg-6"></div>
-                <div className="mt-2 col-md-6 col-lg-6 d-flex justify-content-start justify-content-lg-end">
-                  <div>
-                    <input
-                      class="input-simple"
-                      type="text"
-                      placeholder="Search Email..."
-                      //   value={searchSubType}
-                      //   onChange={(e) => setSearchTourName(e.target.value)}
-                    />
-                  </div>
+                <div className="col-md-6 col-lg-6">
+                  <h4>Booking</h4>
                 </div>
               </div>
             </div>
@@ -476,7 +467,7 @@ export default function Booking() {
                         <td>{item?.zipcode || "-"}</td>
                         <td className="d-flex justify-content-center">
                           <VisibilityIcon
-                            className="courser" 
+                            className="courser"
                             style={{ color: "#4caf50" }}
                             onClick={() => {
                               setModalShow(true);
@@ -518,7 +509,10 @@ export default function Booking() {
                     Booking Information
                   </Modal.Title>
                   <div>
-                    <ClearIcon  className="courser" onClick={() => setModalShow(false)} />
+                    <ClearIcon
+                      className="courser"
+                      onClick={() => setModalShow(false)}
+                    />
                   </div>
                 </Modal.Header>
                 <Modal.Body>

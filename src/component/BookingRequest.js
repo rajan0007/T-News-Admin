@@ -61,7 +61,7 @@ export default function BookingRequest() {
         .then((res) => {
           if (res?.data?.status) {
             console.log("res?.data?.status::: ", res?.data?.status);
-            toast.success(res.data?.message);
+            toast.success(res?.data?.message);
             setModalShow(false);
             getBookingReq();
           } else {
@@ -102,7 +102,6 @@ export default function BookingRequest() {
         if (res.data) {
           console.log("res.data::: ", res?.data?.data);
           setTableData(res?.data?.data);
-          toast.success(res.data?.message);
         } else {
           toast.error(res.data?.message);
         }
@@ -179,79 +178,85 @@ export default function BookingRequest() {
                 </tr>
               </thead>
               <tbody>
-                {tableData?.map((item, i) => (
-                  <>
-                    <tr key={i}>
-                      <td>{i + 1}</td>
-                      <td>
-                        {item?.customerId?.firstName}{" "}
-                        {item?.customerId?.lastName}
-                      </td>
-                      <td>{item?.serviceName}</td>
-                      <td>{item?.customerId.email}</td>
-                      <td>{item?.providerId.length || "-"}</td>
-                      {/* <td>{item?.providerId.map((provider,i) => (<>{i+1} - {provider.firstName}<br/></>))}</td> */}
-                      <td>{item?.ladder || "-"}</td>
-                      <td>{item?.date || "-"}</td>
-                      <td>{`${item.totalHour} /hr ` || "-"}</td>
-                      <td>{item?.time || "-"}</td>
-                      <td>{item?.customerId?.address || "-"}</td>
-                      <td>{item?.zipcode || "-"}</td>
-                      <td>
-                        <button
-                          className={`btn ${
-                            item?.status === "Success"
-                              ? "btn-outline-success"
-                              : "btn-outline-secondary"
-                          }`}
-                          disabled={
-                            item?.status === "Success" ||
-                            item?.status === "Pending"
-                          }
-                        >
-                          {item?.status === "Success"
-                            ? "Success"
-                            : item?.status === "Pending"
-                            ? "Pending"
-                            : "Pending"}
-                        </button>
-                      </td>
-                      {item?.status !== "Success" && (
+                {tableData.length == 0 ? (
+                  <tr>
+                    <td colSpan={15}>No data</td>
+                  </tr>
+                ) : (
+                  tableData?.map((item, i) => (
+                    <>
+                      <tr key={i}>
+                        <td>{i + 1}</td>
+                        <td>
+                          {item?.customerId?.firstName}{" "}
+                          {item?.customerId?.lastName}
+                        </td>
+                        <td>{item?.serviceName}</td>
+                        <td>{item?.customerId.email}</td>
+                        <td>{item?.providerId.length || "-"}</td>
+                        {/* <td>{item?.providerId.map((provider,i) => (<>{i+1} - {provider.firstName}<br/></>))}</td> */}
+                        <td>{item?.ladder || "-"}</td>
+                        <td>{item?.date || "-"}</td>
+                        <td>{`${item.totalHour} /hr ` || "-"}</td>
+                        <td>{item?.time || "-"}</td>
+                        <td>{item?.customerId?.address || "-"}</td>
+                        <td>{item?.zipcode || "-"}</td>
                         <td>
                           <button
-                            className="btn btn-success"
-                            onClick={async () => await sendOtp(item)}
-                            disabled={isLoading}
+                            className={`btn ${
+                              item?.status === "Success"
+                                ? "btn-outline-success"
+                                : "btn-outline-secondary"
+                            }`}
+                            disabled={
+                              item?.status === "Success" ||
+                              item?.status === "Pending"
+                            }
                           >
-                            {isLoading ? (
-                              <span
-                                className="spinner-border spinner-border-sm text-light"
-                                role="status"
-                                aria-hidden="true"
-                              ></span>
-                            ) : (
-                              "Confirm"
-                            )}
+                            {item?.status === "Success"
+                              ? "Success"
+                              : item?.status === "Pending"
+                              ? "Pending"
+                              : "Pending"}
                           </button>
                         </td>
-                      )}
-                      {item?.status != "Pending" && (
-                        <td>
-                          <div className="d-flex justify-content-center">
-                            <VisibilityIcon
-                              className="courser"
-                              style={{ color: "#dc3545" }}
-                              onClick={() => {
-                                setModalShow1(true);
-                                setInfo(item);
-                              }}
-                            />
-                          </div>
-                        </td>
-                      )}
-                    </tr>
-                  </>
-                ))}
+                        {item?.status !== "Success" && (
+                          <td>
+                            <button
+                              className="btn btn-success"
+                              onClick={async () => await sendOtp(item)}
+                              disabled={isLoading}
+                            >
+                              {isLoading ? (
+                                <span
+                                  className="spinner-border spinner-border-sm text-light"
+                                  role="status"
+                                  aria-hidden="true"
+                                ></span>
+                              ) : (
+                                "Confirm"
+                              )}
+                            </button>
+                          </td>
+                        )}
+                        {item?.status != "Pending" && (
+                          <td>
+                            <div className="d-flex justify-content-center">
+                              <VisibilityIcon
+                                className="courser"
+                                style={{ color: "#dc3545" }}
+                                onClick={() => {
+                                  setModalShow1(true);
+                                  setInfo(item);
+                                }}
+                              />
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    </>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

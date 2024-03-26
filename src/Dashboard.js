@@ -11,8 +11,12 @@ import CountUp from "react-countup";
 // import { API_URL } from "../src/config";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "./Lib/ContextLib";
+import { BASEURL } from "./config";
+import axios from "axios";
+import DataServices from "./services/requestApi";
 
 export default function Dashboard() {
+  const isPro = sessionStorage.getItem("role");
   const history = useNavigate();
   const {
     setActive1,
@@ -25,11 +29,15 @@ export default function Dashboard() {
     setActive8,
     accessObject,
   } = useAppContext();
-  const [totalPlayerData] = React.useState([]);
+  const [totalPlayerData, setTotalPlayerData] = React.useState([]);
   const [totalBetAmountData] = React.useState([]);
   const [totalWinAmountData] = React.useState([]);
   // const [totalAddAmountData, setTotalAddAmountData] = React.useState([]);
-  const [totalIncome] = React.useState("");
+  const [totalIncome, setTotalIncome] = React.useState(0);
+  const [customer, setCustomer] = React.useState(0);
+  const [professionalList, setprofessionalList] = React.useState(0);
+  const [booking, setBooking] = React.useState(0);
+  const [blog, setBlog] = React.useState(0);
   // const [totalWithdrawAmountData, setTotalWithdrawAmountData] = React.useState(
   //   []
   // );
@@ -40,43 +48,62 @@ export default function Dashboard() {
     getPlayerList();
   }, []);
 
-  const getPlayerList = () => {
-    // Total Player
-    // axios(`${API_URL}/api/dashboard/dashboard-total-player`, {
-    //   method: "GET",
-    //   credentials: "include",
-    // })
-    //   .then((response) => {
-    //     console.log("dashboard-total-player", response.data.message);
-    //     setTotalPlayerData(response.data.message);
-    //   })
-    //   .catch((error) => {
-    //     console.log("dashboard-total-player", error);
-    //   });
-    // Total Add Amount
-    // axios(`${API_URL}/api/dashboard/dashboard-total-add-amount`, {
-    //   method: "GET",
-    //   credentials: "include",
-    // })
-    //   .then((response) => {
-    //     console.log("dashboard-total-add-amount", response.data.message);
-    //     setTotalAddAmountData(response.data.message);
-    //   })
-    //   .catch((error) => {
-    //     console.log("dashboard-total-add-amount", error);
-    //   });
-    // Total Withdraw Amount
-    // axios(`${API_URL}/api/dashboard/dashboard-total-withdraw-amount`, {
-    //   method: "GET",
-    //   credentials: "include",
-    // })
-    //   .then((response) => {
-    //     console.log("dashboard-total-withdraw-amount", response.data.message);
-    //     setTotalWithdrawAmountData(response.data.message);
-    //   })
-    //   .catch((error) => {
-    //     console.log("dashboard-total-withdraw-amount", error);
-    //   });
+  const getPlayerList = async () => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    console.log("user::: ", user);
+    await axios
+      .post(`${BASEURL}/api/booking/getProviderById`, {
+        providerId: user,
+      })
+      .then((res) => {
+        if (res.data) {
+          let sum = 0;
+          console.log("res.data::: ", res?.data?.data);
+          res?.data?.data.map((data) => {
+            sum = sum + data.total;
+          });
+          setTotalIncome(sum);
+          setTotalPlayerData(res?.data?.data.length);
+        } else {
+        }
+      })
+      .catch((err) => {});
+
+    try {
+      const { data } = await DataServices.GetUser();
+
+      console.log("getBranch data:", data);
+      setCustomer(data?.data.length);
+    } catch (e) {
+      console.error("Error fetching data:", e);
+    }
+
+    try {
+      const { data } = await DataServices.GetAllProvider();
+
+      setprofessionalList(data?.data.length);
+    } catch (e) {}
+
+    try {
+      const { data } = await DataServices.Booking();
+
+      setBooking(data?.data.length);
+    } catch (e) {
+      console.error("Error fetching data:", e);
+    }
+
+    axios(`${BASEURL}/api/blog/allBlog`, {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((response) => {
+        setBlog(response.data.data.length);
+      })
+      .catch((error) => {
+        console.log("getBranch error :::", error);
+      });
+
+    // ;
   };
 
   return (
@@ -92,405 +119,243 @@ export default function Dashboard() {
       </div>
 
       <>
-          <section className="content">
-            <div className="container-fluid">
-              <div className="row">
-                <div className="col-lg-3 col-6">
-                  <div
-                    className="small-box"
-                    style={{ backgroundColor: "#ffab39" }}
-                    onClick={() => {
-                      history("/playerlist", { state: { data: false } });
-                      setActive1(false);
-                      setActive2(true);
-                      setActive3(true);
-                      setActive4(true);
-                      setActive5(true);
-                      setActive6(true);
-                      setActive7(true);
-                      setActive8(true);
-                    }}
-                  >
-                    <div className="inner p-lg-4 p-md-3">
-                      <div
-                        className="row  d-flex"
-                        style={{ justifyContent: "space-between" }}
-                      >
-                        <div className="col-sm-12 col-md-6 col-lg-6 order-2">
-                          <h3
-                            style={{
-                              color: "white",
-                              alignItems: "center",
-                            }}
-                            className="m-2 d-flex justify-content-center justify-content-md-center justify-content-lg-end "
-                          >
-                            <CountUp end={totalPlayerData || 0} />
-                          </h3>
-                        </div>
-                        <div className="col-sm-12 col-md-6 col-lg-6 col-sm order-sm-start-1">
-                          <img
-                            alt="total player"
-                            src={totalPlayer}
-                            height="50px"
-                            width="50px"
-                          />
+        <section className="content">
+          <div className="container-fluid">
+            <div className="row">
+              {isPro == "Provider" && (
+                <>
+                  <div className="col-lg-3 col-6">
+                    <div
+                      className="small-box"
+                      style={{ backgroundColor: "#ffab39" }}
+                    >
+                      <div className="inner p-lg-4 p-md-3">
+                        <div
+                          className="row  d-flex"
+                          style={{ justifyContent: "space-between" }}
+                        >
+                          <div className="col-sm-12 col-md-6 col-lg-6 order-2">
+                            <h3
+                              style={{
+                                color: "white",
+                                alignItems: "center",
+                              }}
+                              className="m-2 d-flex justify-content-center justify-content-md-center justify-content-lg-end "
+                            >
+                              <CountUp end={totalPlayerData || 0} />
+                            </h3>
+                          </div>
+                          <div className="col-sm-12 col-md-6 col-lg-6 col-sm order-sm-start-1">
+                            <img
+                              alt="total player"
+                              src={totalPlayer}
+                              height="50px"
+                              width="50px"
+                            />
+                          </div>
                         </div>
                       </div>
+                      <div className="icon"></div>
+                      <p className="small-box-footer">
+                        <div>Total Booking</div>
+                      </p>
                     </div>
-                    <div className="icon"></div>
-                    <p className="small-box-footer">
-                      <div>Total Player</div>
-                    </p>
                   </div>
-                </div>
-                {/* <div className="col-lg-3 col-6">
-                  <div
-                    className="small-box"
-                    style={{ backgroundColor: "#e7427e" }}
-                    onClick={() => {
-                      history("/addcash", { state: { data: "All" } });
-                      setActive4(false);
-                      setActive1(true);
-                      setActive2(true);
-                      setActive3(true);
-                      setActive5(true);
-                      setActive6(true);
-                      setActive7(true);
-                      setActive8(true);
-                    }}
-                  >
-                    <div className="inner p-lg-4 p-md-3">
-                      <div
-                        className="row  d-flex"
-                        style={{ justifyContent: "space-between" }}
-                      >
-                        <div className="col-sm-12 col-md-6 col-lg-6 order-2">
-                          <h3
-                            style={{
-                              color: "white",
-                              alignItems: "center",
-                            }}
-                            className="m-2 d-flex justify-content-center justify-content-md-center justify-content-lg-end "
-                          >
-                            <CountUp end={totalAddAmountData || 0} />
-                          </h3>
-                        </div>
-                        <div className="col-sm-12 col-md-6 col-lg-6 col-sm order-sm-start-1">
-                          <img
-                            src={total_add_amount_icon}
-                            alt="total_add_amount_icon"
-                            height="50px"
-                            width="50px"
-                          />
+                  <div className="col-lg-3 col-6 ">
+                    <div
+                      className="small-box "
+                      style={{ backgroundColor: "#ca4ddd" }}
+                    >
+                      <div className="inner p-lg-4 p-md-3">
+                        <div
+                          className="row  d-flex"
+                          style={{ justifyContent: "space-between" }}
+                        >
+                          <div className="col-sm-12 col-md-6 col-lg-6 order-2">
+                            <h3
+                              style={{
+                                color: "white",
+                                alignItems: "center",
+                              }}
+                              className="m-2 d-flex justify-content-center justify-content-md-center justify-content-lg-end "
+                            >
+                              <CountUp end={totalIncome || 0} />
+                            </h3>
+                          </div>
+                          <div className="col-sm-12 col-md-6 col-lg-6 col-sm order-sm-start-1">
+                            <img
+                              src={total_income_icon}
+                              alt="total income"
+                              height="50px"
+                              width="50px"
+                            />
+                          </div>
                         </div>
                       </div>
+                      <div className="icon"></div>
+                      <p className="small-box-footer">
+                        <div style={{ color: "white" }}>Total Income</div>
+                      </p>
                     </div>
-                    <div className="icon"></div>
-                    <p className="small-box-footer">
-                      <div style={{ color: "white" }}>
-                        Total Deposite Amount
-                      </div>
-                    </p>
                   </div>
-                </div>
-                <div className="col-lg-3 col-6">
-                  <div
-                    className="small-box"
-                    style={{ backgroundColor: "#541a3d" }}
-                    onClick={() => {
-                      history("/payout", { state: { data: "All" } });
-                      setActive4(false);
-                      setActive1(true);
-                      setActive2(true);
-                      setActive3(true);
-                      setActive5(true);
-                      setActive6(true);
-                      setActive7(true);
-                      setActive8(true);
-                    }}
-                  >
-                    <div className="inner p-lg-4 p-md-3">
-                      <div
-                        className="row  d-flex"
-                        style={{ justifyContent: "space-between" }}
-                      >
-                        <div className="col-sm-12 col-md-6 col-lg-6 order-2">
-                          <h3
-                            style={{
-                              color: "white",
-                              alignItems: "center",
-                            }}
-                            className="m-2 d-flex justify-content-center justify-content-md-center justify-content-lg-end "
-                          >
-                            <CountUp end={totalWithdrawAmountData || 0} />
-                          </h3>
-                        </div>
-                        <div className="col-sm-12 col-md-6 col-lg-6 col-sm order-sm-start-1">
-                          <img
-                            src={total_withdraw_icon}
-                            alt="total_withdraw_icon"
-                            height="50px"
-                            width="50px"
-                          />
+                </>
+              )}
+              {isPro == "Admin" && (
+                <>
+                  <div className="col-lg-3 col-6">
+                    <div
+                      className="small-box"
+                      style={{ backgroundColor: "#ffab39" }}
+                    >
+                      <div className="inner p-lg-4 p-md-3">
+                        <div
+                          className="row  d-flex"
+                          style={{ justifyContent: "space-between" }}
+                        >
+                          <div className="col-sm-12 col-md-6 col-lg-6 order-2">
+                            <h3
+                              style={{
+                                color: "white",
+                                alignItems: "center",
+                              }}
+                              className="m-2 d-flex justify-content-center justify-content-md-center justify-content-lg-end "
+                            >
+                              <CountUp end={customer || 0} />
+                            </h3>
+                          </div>
+                          <div className="col-sm-12 col-md-6 col-lg-6 col-sm order-sm-start-1">
+                            <img
+                              alt="total player"
+                              src={totalPlayer}
+                              height="50px"
+                              width="50px"
+                            />
+                          </div>
                         </div>
                       </div>
+                      <div className="icon"></div>
+                      <p className="small-box-footer">
+                        <div>Total Customer</div>
+                      </p>
                     </div>
-                    <div className="icon"></div>
-                    <p className="small-box-footer">
-                      <div style={{ color: "white" }}>
-                        Total Withdraw Amount
-                      </div>
-                    </p>
                   </div>
-                </div>
-                <div className="col-lg-3 col-6">
-                  <div
-                    className="small-box"
-                    style={{ backgroundColor: "#415ce7" }}
-                    onClick={() => {
-                      history("/addcash", { state: { data: true } });
-                      setActive4(false);
-                      setActive1(true);
-                      setActive2(true);
-                      setActive3(true);
-                      setActive5(true);
-                      setActive6(true);
-                      setActive7(true);
-                      setActive8(true);
-                    }}
-                  >
-                    <div className="inner p-lg-4 p-md-3">
-                      <div
-                        className="row  d-flex"
-                        style={{ justifyContent: "space-between" }}
-                      >
-                        <div className="col-sm-12 col-md-6 col-lg-6 order-2">
-                          <h3
-                            style={{
-                              color: "white",
-                              alignItems: "center",
-                            }}
-                            className="m-2 d-flex justify-content-center justify-content-md-center justify-content-lg-end "
-                          >
-                            <CountUp end={totalAddAmountData || 0} />
-                          </h3>
-                        </div>
-                        <div className="col-sm-12 col-md-6 col-lg-6 col-sm order-sm-start-1">
-                          <img
-                            src={total_add_amount_icon}
-                            alt="total_add_amount_icon"
-                            height="50px"
-                            width="50px"
-                          />
+                  <div className="col-lg-3 col-6 ">
+                    <div
+                      className="small-box "
+                      style={{ backgroundColor: "#ca4ddd" }}
+                    >
+                      <div className="inner p-lg-4 p-md-3">
+                        <div
+                          className="row  d-flex"
+                          style={{ justifyContent: "space-between" }}
+                        >
+                          <div className="col-sm-12 col-md-6 col-lg-6 order-2">
+                            <h3
+                              style={{
+                                color: "white",
+                                alignItems: "center",
+                              }}
+                              className="m-2 d-flex justify-content-center justify-content-md-center justify-content-lg-end "
+                            >
+                              <CountUp end={professionalList || 0} />
+                            </h3>
+                          </div>
+                          <div className="col-sm-12 col-md-6 col-lg-6 col-sm order-sm-start-1">
+                            <img
+                              src={totalPlayer}
+                              alt="total income"
+                              height="50px"
+                              width="50px"
+                            />
+                          </div>
                         </div>
                       </div>
+                      <div className="icon"></div>
+                      <p className="small-box-footer">
+                        <div style={{ color: "white" }}>Total Professional</div>
+                      </p>
                     </div>
-                    <div className="icon"></div>
-                    <p className="small-box-footer">
-                      <div style={{ color: "white" }}>
-                        Pending Deposite Amount
-                      </div>
-                    </p>
                   </div>
-                </div>
-                <div className="col-lg-3 col-6">
-                  <div
-                    className="small-box "
-                    style={{ backgroundColor: "#f57348" }}
-                    onClick={() => {
-                      history("/payout", { state: { data: true } });
-                      setActive4(false);
-                      setActive1(true);
-                      setActive2(true);
-                      setActive3(true);
-                      setActive5(true);
-                      setActive6(true);
-                      setActive7(true);
-                      setActive8(true);
-                    }}
-                  >
-                    <div className="inner p-lg-4 p-md-3">
-                      <div
-                        className="row  d-flex"
-                        style={{ justifyContent: "space-between" }}
-                      >
-                        <div className="col-sm-12 col-md-6 col-lg-6 order-2">
-                          <h3
-                            style={{
-                              color: "white",
-                              alignItems: "center",
-                            }}
-                            className="m-2 d-flex justify-content-center justify-content-md-center justify-content-lg-end "
-                          >
-                            <CountUp end={totalWithdrawAmountData || 0} />
-                          </h3>
-                        </div>
-                        <div className="col-sm-12 col-md-6 col-lg-6 col-sm order-sm-start-1">
-                          <img
-                            src={total_withdraw_icon}
-                            alt="total_withdraw_icon"
-                            height="50px"
-                            width="50px"
-                          />
+                  <div className="col-lg-3 col-6">
+                    <div
+                      className="small-box"
+                      style={{ backgroundColor: "#ffab39" }}
+                    >
+                      <div className="inner p-lg-4 p-md-3">
+                        <div
+                          className="row  d-flex"
+                          style={{ justifyContent: "space-between" }}
+                        >
+                          <div className="col-sm-12 col-md-6 col-lg-6 order-2">
+                            <h3
+                              style={{
+                                color: "white",
+                                alignItems: "center",
+                              }}
+                              className="m-2 d-flex justify-content-center justify-content-md-center justify-content-lg-end "
+                            >
+                              <CountUp end={booking || 0} />
+                            </h3>
+                          </div>
+                          <div className="col-sm-12 col-md-6 col-lg-6 col-sm order-sm-start-1">
+                            <img
+                              alt="total player"
+                              src={total_bet_amount_icon}
+                              height="50px"
+                              width="50px"
+                            />
+                          </div>
                         </div>
                       </div>
+                      <div className="icon"></div>
+                      <p className="small-box-footer">
+                        <div>Total Booking</div>
+                      </p>
                     </div>
-                    <div className="icon"></div>
-                    <p className="small-box-footer">
-                      <div style={{ color: "white" }}>
-                        Pending Withdraw Amount
-                      </div>
-                    </p>
                   </div>
-                </div> */}
-                <div className="col-lg-3 col-6">
-                  <div
-                    className="small-box"
-                    style={{ backgroundColor: "#2ec268" }}
-                    onClick={() => {
-                      history("/bet");
-                      setActive4(false);
-                      setActive1(true);
-                      setActive2(true);
-                      setActive3(true);
-                      setActive5(true);
-                      setActive6(true);
-                      setActive7(true);
-                      setActive8(true);
-                    }}
-                  >
-                    <div className="inner p-lg-4 p-md-3">
-                      <div
-                        className="row  d-flex"
-                        style={{ justifyContent: "space-between" }}
-                      >
-                        <div className="col-sm-12 col-md-6 col-lg-6 order-2">
-                          <h3
-                            style={{
-                              color: "white",
-                              alignItems: "center",
-                            }}
-                            className="m-2 d-flex justify-content-center justify-content-md-center justify-content-lg-end "
-                          >
-                            <CountUp end={totalBetAmountData || 0} />
-                          </h3>
-                        </div>
-                        <div className="col-sm-12 col-md-6 col-lg-6 col-sm order-sm-start-1">
-                          <img
-                            src={total_bet_amount_icon}
-                            alt="total_bet_amount_icon"
-                            height="50px"
-                            width="50px"
-                          />
+                  <div className="col-lg-3 col-6 ">
+                    <div
+                      className="small-box "
+                      style={{ backgroundColor: "#ca4ddd" }}
+                    >
+                      <div className="inner p-lg-4 p-md-3">
+                        <div
+                          className="row  d-flex"
+                          style={{ justifyContent: "space-between" }}
+                        >
+                          <div className="col-sm-12 col-md-6 col-lg-6 order-2">
+                            <h3
+                              style={{
+                                color: "white",
+                                alignItems: "center",
+                              }}
+                              className="m-2 d-flex justify-content-center justify-content-md-center justify-content-lg-end "
+                            >
+                              <CountUp end={blog || 0} />
+                            </h3>
+                          </div>
+                          <div className="col-sm-12 col-md-6 col-lg-6 col-sm order-sm-start-1">
+                            <img
+                              src={total_income_icon}
+                              alt="total income"
+                              height="50px"
+                              width="50px"
+                            />
+                          </div>
                         </div>
                       </div>
+                      <div className="icon"></div>
+                      <p className="small-box-footer">
+                        <div style={{ color: "white" }}>Total Blog</div>
+                      </p>
                     </div>
-                    <div className="icon"></div>
-                    <p className="small-box-footer">
-                      <div style={{ color: "white" }}>Total Bet Amount</div>
-                    </p>
                   </div>
-                </div>
-                <div className="col-lg-3 col-6">
-                  <div
-                    className="small-box"
-                    style={{ backgroundColor: "#ff3843" }}
-                    onClick={() => {
-                      history("/win");
-                      setActive4(false);
-                      setActive1(true);
-                      setActive2(true);
-                      setActive3(true);
-                      setActive5(true);
-                      setActive6(true);
-                      setActive7(true);
-                      setActive8(true);
-                    }}
-                  >
-                    <div className="inner p-lg-4 p-md-3">
-                      <div
-                        className="row  d-flex"
-                        style={{ justifyContent: "space-between" }}
-                      >
-                        <div className="col-sm-12 col-md-6 col-lg-6 order-2">
-                          <h3
-                            style={{
-                              color: "white",
-                              alignItems: "center",
-                            }}
-                            className="m-2 d-flex justify-content-center justify-content-md-center justify-content-lg-end "
-                          >
-                            <CountUp end={totalWinAmountData || 0} />
-                          </h3>
-                        </div>
-                        <div className="col-sm-12 col-md-6 col-lg-6 col-sm order-sm-start-1">
-                          <img
-                            src={total_win_amount_icon}
-                            alt="total win amt"
-                            height="50px"
-                            width="50px"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="icon"></div>
-                    <p className="small-box-footer">
-                      <div style={{ color: "white" }}>Total Win Amount</div>
-                    </p>
-                  </div>
-                </div>
-                <div className="col-lg-3 col-6 ">
-                  <div
-                    className="small-box "
-                    style={{ backgroundColor: "#ca4ddd" }}
-                    onClick={() => {
-                      history("/income-details");
-                      setActive3(false);
-                      setActive1(true);
-                      setActive2(true);
-                      setActive4(true);
-                      setActive5(true);
-                      setActive6(true);
-                      setActive7(true);
-                      setActive8(true);
-                    }}
-                  >
-                    <div className="inner p-lg-4 p-md-3">
-                      <div
-                        className="row  d-flex"
-                        style={{ justifyContent: "space-between" }}
-                      >
-                        <div className="col-sm-12 col-md-6 col-lg-6 order-2">
-                          <h3
-                            style={{
-                              color: "white",
-                              alignItems: "center",
-                            }}
-                            className="m-2 d-flex justify-content-center justify-content-md-center justify-content-lg-end "
-                          >
-                            <CountUp end={totalIncome || 0} />
-                          </h3>
-                        </div>
-                        <div className="col-sm-12 col-md-6 col-lg-6 col-sm order-sm-start-1">
-                          <img
-                            src={total_income_icon}
-                            alt="total income"
-                            height="50px"
-                            width="50px"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="icon"></div>
-                    <p className="small-box-footer">
-                      <div style={{ color: "white" }}>Total Income</div>
-                    </p>
-                  </div>
-                </div>
-              </div>
+                </>
+              )}
             </div>
-          </section>
-        </>
+          </div>
+        </section>
+      </>
     </div>
   );
 }

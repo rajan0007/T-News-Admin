@@ -13,7 +13,6 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import DataServices from "../services/requestApi";
 import { toast } from "react-toastify";
 
-
 export default function Admin() {
   const [alert, setAlert] = React.useState(null);
   const [tableData, setTableData] = React.useState([]);
@@ -29,8 +28,6 @@ export default function Admin() {
     start: 0,
     end: showPrePage,
   });
-
- 
 
   const onPaginationChange = (start, end) => {
     setPagination({ start: start, end: end });
@@ -84,34 +81,39 @@ export default function Admin() {
     setOpenValue(value);
   };
 
-  const updateAdmin =async (value) => {
+  const updateAdmin = async (value) => {
+    setButtonLoader(true);
     console.log("updateTournament value :::", value);
-    const data = { value };
     try {
-      const { res } = await DataServices.UpdateAdmin(data);
-      console.log('res', res);
-      // if (res.isValid) {
-      //   successAdd(res.message);
-      // }
+      const { data } = await DataServices.UpdateAdmin(value);
+      if (data.status) {
+        toast.success(data.message);
+        setShowPage(false);
+        setButtonLoader(false);
+        getBranch();
+      }
     } catch (error) {
       console.error("Error adding new tournament:", error);
     }
-   
   };
 
   const addNewAdmin = async (value) => {
     console.log("addNewTournament value :::", value, openValue, rowValue);
-    console.log('value', value)
-    
-    // try {
-    //   const { res } = await DataServices.AddAdmin(value);
-    //   console.log('res', res);
-    //   // if (res.isValid) {
-    //   //   successAdd(res.message);
-    //   // }
-    // } catch (error) {
-    //   console.error("Error adding new tournament:", error);
-    // }
+    console.log("value", value);
+    setButtonLoader(true);
+
+    try {
+      const { data } = await DataServices.AddAdmin(value);
+      console.log("data", data);
+      if (data.status) {
+        toast.success(data.message);
+        setShowPage(false);
+        setButtonLoader(false);
+        getBranch();
+      }
+    } catch (error) {
+      console.error("Error adding new tournament:", error);
+    }
   };
 
   const warningWithConfirmMessage = (e) => {
@@ -150,7 +152,7 @@ export default function Admin() {
     );
   };
 
-  const deleteData =async (e) => {
+  const deleteData = async (e) => {
     console.log("e===>", e._id);
     const dto = { id: e._id };
     try {
@@ -161,9 +163,7 @@ export default function Admin() {
       } else {
         toast.warning(data?.message);
       }
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   };
 
   const successAdd = (msg) => {
@@ -211,17 +211,17 @@ export default function Admin() {
               <Formik
                 initialValues={{
                   email: rowValue ? rowValue?.email : "",
-                  password:  "",
+                  password: "",
                   oldPassword: "",
                   confirmPassword: "",
                 }}
-                validationSchema={openValue == 1 ?addSchema : editSchema}
+                validationSchema={openValue == 1 ? addSchema : editSchema}
                 onSubmit={(values) => {
                   // setButtonLoader(true);
                   delete values.confirmPassword;
                   console.log("update formik value :::", values, openValue);
                   if (openValue == 1) {
-                  delete values.oldPassword;
+                    delete values.oldPassword;
                     console.log("add formik value :::", openValue);
                     addNewAdmin(values);
                   }
@@ -237,11 +237,10 @@ export default function Admin() {
                       <div className="form-group">
                         <label htmlFor="password">Email</label>
                         <Field
-                          
                           type="email"
                           name="email"
                           placeholder="Email"
-                          disabled={openValue == 2 }
+                          disabled={openValue == 2}
                           className={`mt-2 form-control
                           ${touched.email && errors.email ? "is-invalid" : ""}`}
                         />
@@ -251,25 +250,27 @@ export default function Admin() {
                           className="invalid-feedback"
                         />
                       </div>
-                      {openValue == 2 && <div className="form-group">
-                        <label htmlFor="password">Old Password</label>
-                        <Field
-                          type="text"
-                          name="oldPassword"
-                          placeholder="Password"
-                          className={`mt-2 form-control
+                      {openValue == 2 && (
+                        <div className="form-group">
+                          <label htmlFor="password">Old Password</label>
+                          <Field
+                            type="text"
+                            name="oldPassword"
+                            placeholder="Password"
+                            className={`mt-2 form-control
                           ${
                             touched.oldPassword && errors.oldPassword
                               ? "is-invalid"
                               : ""
                           }`}
-                        />
-                        <ErrorMessage
-                          component="div"
-                          name="oldPassword"
-                          className="invalid-feedback"
-                        />
-                      </div> }
+                          />
+                          <ErrorMessage
+                            component="div"
+                            name="oldPassword"
+                            className="invalid-feedback"
+                          />
+                        </div>
+                      )}
                       <div className="form-group">
                         <label htmlFor="password">Password</label>
                         <Field

@@ -41,6 +41,14 @@ class DataService {
   ProviderImage(data) {
     return axiosInstance.post("/auth/upload", data);
   }
+
+  blogImage(data) {
+    return axiosInstance.post("/blog/uploadImageBlog", data);
+  }
+  UpdateBlog(data) {
+    return axiosInstance.patch("blog/updateBlog", data);
+  }
+
   GetProviderBooking(data) {
     return axiosInstance.post("/booking/getProviderById", data);
   }
@@ -62,6 +70,10 @@ class DataService {
   }
   AddAdmin(data) {
     return axiosInstance.post("auth/addAdmin", data);
+  }
+
+  addBlog(data) {
+    return axiosInstance.post("blog/addBlog", data);
   }
 }
 
