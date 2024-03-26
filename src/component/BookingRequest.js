@@ -64,7 +64,6 @@ export default function BookingRequest() {
             toast.success(res.data?.message);
             setModalShow(false);
             getBookingReq();
-            setIsLoading(false);
           } else {
             toast.error(res.data?.message);
           }
@@ -72,9 +71,10 @@ export default function BookingRequest() {
         .catch((err) => {});
     } else {
       toast.error("All fields required");
+      setIsLoading(false);
     }
   };
-
+  console.log("isLoading", isLoading);
   useEffect(() => {
     getBookingReq();
   }, []);
@@ -126,6 +126,7 @@ export default function BookingRequest() {
   // };
 
   const sendOtp = async (item) => {
+    setIsLoading(true);
     await axios
       .post(`${BASEURL}/api/booking/sendOtp`, {
         customerId: item.customerId._id,
@@ -135,11 +136,14 @@ export default function BookingRequest() {
           toast.success(res.data?.message);
           setModalShow(true);
           setRowValue(item);
+          setIsLoading(false);
         } else {
           toast.error(res.data?.message);
         }
       })
-      .catch((err) => {});
+      .catch((err) => {
+        console.log("err", err);
+      });
   };
 
   return (
@@ -177,7 +181,7 @@ export default function BookingRequest() {
               <tbody>
                 {tableData?.map((item, i) => (
                   <>
-                    <tr>
+                    <tr key={i}>
                       <td>{i + 1}</td>
                       <td>
                         {item?.customerId?.firstName}{" "}
@@ -212,13 +216,22 @@ export default function BookingRequest() {
                             : "Pending"}
                         </button>
                       </td>
-                      {item?.status != "Success" && (
+                      {item?.status !== "Success" && (
                         <td>
                           <button
                             className="btn btn-success"
-                            onClick={async () => sendOtp(item)}
+                            onClick={async () => await sendOtp(item)}
+                            disabled={isLoading}
                           >
-                            Confirm
+                            {isLoading ? (
+                              <span
+                                className="spinner-border spinner-border-sm text-light"
+                                role="status"
+                                aria-hidden="true"
+                              ></span>
+                            ) : (
+                              "Confirm"
+                            )}
                           </button>
                         </td>
                       )}
@@ -373,8 +386,9 @@ export default function BookingRequest() {
                   Phone No. : &nbsp;{info?.customerId?.phoneNo || "-"}
                 </h6>
                 <p className="card-subtitle mb-2 text-body-secondary mt-3">
-                  <span style={{ fontWeight: "600" }}>Address :</span>{" "}&nbsp;
-                  {info?.customerId?.address|| "-"},&nbsp;{info?.customerId?.city || "-"},&nbsp;
+                  <span style={{ fontWeight: "600" }}>Address :</span> &nbsp;
+                  {info?.customerId?.address || "-"},&nbsp;
+                  {info?.customerId?.city || "-"},&nbsp;
                   {info?.customerId?.state || "-"}
                 </p>
               </div>

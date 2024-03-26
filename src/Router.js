@@ -7,6 +7,7 @@ import ProfessionlList from "./component/ProfessionlList";
 import Booking from "./component/Booking";
 import BookingRequest from "./component/BookingRequest";
 import Admin from "./component/Admin";
+import Payment from "./component/Payment";
 
 export default function Router() {
   return (
@@ -19,6 +20,7 @@ export default function Router() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/booking" element={<Booking />} />
+        <Route path="/payment" element={<Payment />} />
         <Route path="/booking-request" element={<BookingRequest />} />
       </Routes>
     </div>
