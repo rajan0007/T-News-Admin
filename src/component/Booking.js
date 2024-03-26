@@ -444,7 +444,7 @@ export default function Booking() {
                     <th>Address</th>
                     <th>zipCode</th>
                     <th>Info</th>
-                    <th>Action</th>
+             
                   </tr>
                 </thead>
                 <tbody>
@@ -475,7 +475,7 @@ export default function Booking() {
                             }}
                           />
                         </td>
-                        <td>
+                        {/* <td>
                           <div className="d-flex justify-content-evenly ">
                             <EditIcon
                               className="mr-3 courser"
@@ -489,7 +489,7 @@ export default function Booking() {
                               // onClick={() => warningWithConfirmMessage(item)}
                             />
                           </div>
-                        </td>
+                        </td> */}
                       </tr>
                     </>
                   ))}
