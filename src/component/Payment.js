@@ -12,6 +12,8 @@ import SweetAlert from "react-bootstrap-sweetalert";
 import { toast } from "react-toastify";
 import DataServices from "../services/requestApi";
 import { Button, Modal } from "react-bootstrap";
+import { BASEURL } from "../config";
+import Loader from "../Loader/Loader";
 
 export default function Payment() {
   const [showPage, setShowPage] = useState(false);
@@ -29,7 +31,8 @@ export default function Payment() {
     start: 0,
     end: showPrePage,
   });
-
+  const isPro = sessionStorage.getItem("role");
+  console.log("isPro", isPro);
   const LoginSchema = Yup.object().shape({
     password: Yup.string()
       .min(3, "Password must be 3 characters at minimum")
@@ -49,7 +52,12 @@ export default function Payment() {
   });
 
   React.useEffect(() => {
-    getBranch();
+    {
+      isPro == "Admin" && getBranch();
+    }
+    {
+      isPro == "Provider" && getBookingReq();
+    }
   }, []);
 
   const getBranch = async () => {
@@ -57,16 +65,42 @@ export default function Payment() {
     try {
       const { data } = await DataServices.Booking();
       setLoader(false);
-      console.log("getBranch data:", data);
+      console.log("getBranchadminpayment data:", data);
       setTableData(data?.data);
     } catch (e) {
       console.error("Error fetching data:", e);
     }
   };
+  const getBookingReq = async () => {
+    setLoader(true);
 
-  const searchingData = [];
-  let data = [];
-  console.log("tableData 111 ---", tableData, searchTourName);
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    console.log("user::: ", user);
+    await axios
+      .post(`${BASEURL}/api/booking/getProviderById`, {
+        providerId: user,
+      })
+      .then((res) => {
+        if (res.data) {
+          setLoader(false);
+          console.log("Provider>>>res.data:::>>>> ", res?.data?.data);
+          setTableData(res?.data?.data);
+        } else {
+          toast.error(res.data?.message);
+        }
+      })
+      .catch((err) => {});
+  };
+  if (isPro === "Provider") {
+    let sum = 0;
+  
+    const getTotal = () => {
+      tableData.providerId.forEach((item) => {
+        sum += item.perHourPrice * tableData.totalHour;
+      });
+    };
+  }
+ 
   // if (searchTourName) {
   //   console.log("tableData 222 ---", tableData, tableData.length > 0);
   //   data = tableData.filter((item) => {
@@ -197,234 +231,242 @@ export default function Payment() {
   const [modalShow, setModalShow] = useState(false);
   return (
     <>
-      {alert}
-      {showPage ? (
-        <div class="content p-3 ">
-          <div className="card p-3">
-            <Box sx={{ width: "100%" }}>
-              <Formik
-                initialValues={{
-                  firstName: rowValue ? rowValue?.firstName : "",
-                  email: rowValue ? rowValue?.email : "",
-                  lastName: rowValue ? rowValue?.lastName : "",
-                  phoneNo: rowValue ? rowValue?.phoneNo : "",
-                  city: rowValue ? rowValue?.city : "",
-                  state: rowValue ? rowValue?.state : "",
-                  address: rowValue ? rowValue?.address : "",
-                  password: rowValue ? rowValue?.password : "",
-                }}
-                validationSchema={LoginSchema}
-                onSubmit={(values) => {
-                  if (parseInt(openValue) === 2) {
-                    updateCustomer(values);
-                  }
-                }}
-              >
-                {({ touched, errors, isSubmitting, values, setFieldValue }) => (
-                  <div>
-                    <Form>
-                      <div className="form-group">
-                        <label htmlFor="password">First Name</label>
-                        <Field
-                          type="text"
-                          name="firstName"
-                          placeholder="First Name"
-                          className={`mt-2 form-control
+      {isPro == "Provider" && (
+        <>
+          {alert}
+          {showPage ? (
+            <div class="content p-3 ">
+              <div className="card p-3">
+                <Box sx={{ width: "100%" }}>
+                  <Formik
+                    initialValues={{
+                      firstName: rowValue ? rowValue?.firstName : "",
+                      email: rowValue ? rowValue?.email : "",
+                      lastName: rowValue ? rowValue?.lastName : "",
+                      phoneNo: rowValue ? rowValue?.phoneNo : "",
+                      city: rowValue ? rowValue?.city : "",
+                      state: rowValue ? rowValue?.state : "",
+                      address: rowValue ? rowValue?.address : "",
+                      password: rowValue ? rowValue?.password : "",
+                    }}
+                    validationSchema={LoginSchema}
+                    onSubmit={(values) => {
+                      if (parseInt(openValue) === 2) {
+                        updateCustomer(values);
+                      }
+                    }}
+                  >
+                    {({
+                      touched,
+                      errors,
+                      isSubmitting,
+                      values,
+                      setFieldValue,
+                    }) => (
+                      <div>
+                        <Form>
+                          <div className="form-group">
+                            <label htmlFor="password">First Name</label>
+                            <Field
+                              type="text"
+                              name="firstName"
+                              placeholder="First Name"
+                              className={`mt-2 form-control
                           ${
                             touched.firstName && errors.firstName
                               ? "is-invalid"
                               : ""
                           }`}
-                        />
-                        <ErrorMessage
-                          component="div"
-                          name="firstName"
-                          className="invalid-feedback"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="password">Last Name</label>
-                        <Field
-                          type="text"
-                          name="lastName"
-                          placeholder="Last Name"
-                          className={`mt-2 form-control
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="firstName"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="password">Last Name</label>
+                            <Field
+                              type="text"
+                              name="lastName"
+                              placeholder="Last Name"
+                              className={`mt-2 form-control
                           ${
                             touched.lastName && errors.lastName
                               ? "is-invalid"
                               : ""
                           }`}
-                        />
-                        <ErrorMessage
-                          component="div"
-                          name="lastName"
-                          className="invalid-feedback"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="password">Email</label>
-                        <Field
-                          type="email"
-                          name="email"
-                          placeholder="Email"
-                          className={`mt-2 form-control
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="lastName"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="password">Email</label>
+                            <Field
+                              type="email"
+                              name="email"
+                              placeholder="Email"
+                              className={`mt-2 form-control
                           ${touched.email && errors.email ? "is-invalid" : ""}`}
-                        />
-                        <ErrorMessage
-                          component="div"
-                          name="email"
-                          className="invalid-feedback"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="password">Phone No</label>
-                        <Field
-                          type="text"
-                          name="phoneNo"
-                          placeholder="PhoneNo"
-                          className={`mt-2 form-control
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="email"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="password">Phone No</label>
+                            <Field
+                              type="text"
+                              name="phoneNo"
+                              placeholder="PhoneNo"
+                              className={`mt-2 form-control
                           ${
                             touched.phoneNo && errors.phoneNo
                               ? "is-invalid"
                               : ""
                           }`}
-                        />
-                        <ErrorMessage
-                          component="div"
-                          name="phoneNo"
-                          className="invalid-feedback"
-                        />
-                      </div>
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="phoneNo"
+                              className="invalid-feedback"
+                            />
+                          </div>
 
-                      <div className="form-group">
-                        <label htmlFor="password">Address</label>
-                        <Field
-                          type="text"
-                          name="address"
-                          placeholder="Address"
-                          as="textarea"
-                          row={4}
-                          className={`mt-2 form-control
+                          <div className="form-group">
+                            <label htmlFor="password">Address</label>
+                            <Field
+                              type="text"
+                              name="address"
+                              placeholder="Address"
+                              as="textarea"
+                              row={4}
+                              className={`mt-2 form-control
                           ${
                             touched.address && errors.address
                               ? "is-invalid"
                               : ""
                           }`}
-                        />
-                        <ErrorMessage
-                          component="div"
-                          name="address"
-                          className="invalid-feedback"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="password">City</label>
-                        <Field
-                          type="text"
-                          name="city"
-                          placeholder="city"
-                          className={`mt-2 form-control
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="address"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="password">City</label>
+                            <Field
+                              type="text"
+                              name="city"
+                              placeholder="city"
+                              className={`mt-2 form-control
                           ${touched.city && errors.city ? "is-invalid" : ""}`}
-                        />
-                        <ErrorMessage
-                          component="div"
-                          name="city"
-                          className="invalid-feedback"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="password">State</label>
-                        <Field
-                          type="text"
-                          name="state"
-                          placeholder="state"
-                          className={`mt-2 form-control
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="city"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="password">State</label>
+                            <Field
+                              type="text"
+                              name="state"
+                              placeholder="state"
+                              className={`mt-2 form-control
                           ${touched.state && errors.state ? "is-invalid" : ""}`}
-                        />
-                        <ErrorMessage
-                          component="div"
-                          name="state"
-                          className="invalid-feedback"
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <Field
-                          type="text"
-                          name="password"
-                          placeholder="Password"
-                          className={`mt-2 form-control
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="state"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="password">Password</label>
+                            <Field
+                              type="text"
+                              name="password"
+                              placeholder="Password"
+                              className={`mt-2 form-control
                           ${
                             touched.password && errors.password
                               ? "is-invalid"
                               : ""
                           }`}
-                        />
-                        <ErrorMessage
-                          component="div"
-                          name="password"
-                          className="invalid-feedback"
-                        />
-                      </div>
-
-                      <div className="d-flex">
-                        <button
-                          style={{ width: "100px" }}
-                          type="submit"
-                          className="btn btn-primary btn-block mt-4 mr-2"
-                          disabled={buttonLoader}
-                        >
-                          <div
-                            className="d-flex"
-                            style={{
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <div
-                              className="d-flex"
-                              style={{
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
-                              <b>Submit</b>
-                            </div>
-                            {buttonLoader && (
-                              <div>
-                                <div
-                                  class="spinner-border ml-2 mt-1"
-                                  role="status"
-                                  style={{ height: "20px", width: "20px" }}
-                                ></div>
-                              </div>
-                            )}
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="password"
+                              className="invalid-feedback"
+                            />
                           </div>
-                        </button>
-                        <button
-                          style={{ width: "100px" }}
-                          onClick={() => setShowPage(false)}
-                          type="button"
-                          className="btn btn-secondary btn-block mt-4 ms-2"
-                        >
-                          Close
-                        </button>
+
+                          <div className="d-flex">
+                            <button
+                              style={{ width: "100px" }}
+                              type="submit"
+                              className="btn btn-primary btn-block mt-4 mr-2"
+                              disabled={buttonLoader}
+                            >
+                              <div
+                                className="d-flex"
+                                style={{
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <div
+                                  className="d-flex"
+                                  style={{
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <b>Submit</b>
+                                </div>
+                                {buttonLoader && (
+                                  <div>
+                                    <div
+                                      class="spinner-border ml-2 mt-1"
+                                      role="status"
+                                      style={{ height: "20px", width: "20px" }}
+                                    ></div>
+                                  </div>
+                                )}
+                              </div>
+                            </button>
+                            <button
+                              style={{ width: "100px" }}
+                              onClick={() => setShowPage(false)}
+                              type="button"
+                              className="btn btn-secondary btn-block mt-4 ms-2"
+                            >
+                              Close
+                            </button>
+                          </div>
+                        </Form>
                       </div>
-                    </Form>
-                  </div>
-                )}
-              </Formik>
-            </Box>
-          </div>
-        </div>
-      ) : (
-        <div className="content p-3">
-          <div class="card ">
-            <div class="pl-4 pr-4 pt-4">
-              <div className="row">
-                <div className="col-md-6 col-lg-6"></div>
-                <div className="mt-2 col-md-6 col-lg-6 d-flex justify-content-start justify-content-lg-end">
-                  {/* <div>
+                    )}
+                  </Formik>
+                </Box>
+              </div>
+            </div>
+          ) : (
+            <div className="content p-3">
+              <div class="card ">
+                <div class="pl-4 pr-4 pt-4">
+                  <div className="row">
+                    <div className="col-md-6 col-lg-6"></div>
+                    <div className="mt-2 col-md-6 col-lg-6 d-flex justify-content-start justify-content-lg-end">
+                      {/* <div>
                     <input
                       class="input-simple"
                       type="text"
@@ -433,54 +475,57 @@ export default function Payment() {
                       //   onChange={(e) => setSearchTourName(e.target.value)}
                     />
                   </div> */}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            <div class="card-body" style={{ overflow: "scroll" }}>
-              <table id="" class="table table-bordered table-striped">
-                <thead>
-                  <tr>
-                    <th>SrNo</th>
-                    <th>Customer Name</th>
-                    <th>Service Name</th>
-                    <th>CardHolder Name</th>
-                    <th>Card Number</th>
-                    <th>Card MM/YY</th>
-                    <th>CVV</th>
-                    <th>UPI id</th>
-                    <th>Subtotal</th>
-                    <th>Info</th>
-                    {/* <th>Action</th> */}
-                  </tr>
-                </thead>
-                <tbody>
-                  {tableData.map((item, i) => (
-                    <>
+                <div class="card-body" style={{ overflow: "scroll" }}>
+                  <table id="" class="table table-bordered table-striped">
+                    <thead>
                       <tr>
-                        <td>{i + 1}</td>
-                        <td>
-                          {item?.customerId?.firstName}{" "}
-                          {item?.customerId?.lastName}
-                        </td>
-                        <td>{item?.serviceName}</td>
-                        <td>{item?.cardHolderName || "-"}</td>
-                        <td>{item?.cardNumber || "-"}</td>
-                        <td>{item?.cardDate || "-"}</td>
-                        <td>{item.cvv || "-"}</td>
-                        <td>{item.upi || "-"}</td>
-                        <td>₹&nbsp;{`${item.total}.00 ` || "-"}</td>
-                        <td className="d-flex justify-content-center">
-                          <VisibilityIcon
-                            className="courser" 
-                            style={{ color: "#4caf50" }}
-                            onClick={() => {
-                              setModalShow(true);
-                              setInfo(item);
-                            }}
-                          />
-                        </td>
-                        {/* <td>
+                        <th>SrNo</th>
+                        <th>Customer Name</th>
+                        <th>Service Name</th>
+                        <th>CardHolder Name</th>
+                        <th>Card Number</th>
+                        <th>Card MM/YY</th>
+                        <th>CVV</th>
+                        <th>UPI id</th>
+                        <th>Subtotal</th>
+                        <th>Info</th>
+                        {/* <th>Action</th> */}
+                      </tr>
+                      </thead>
+                      {loader ? (
+                      ""
+                    ) : (
+                    <tbody>
+                      {tableData.map((item, i) => (
+                        <>
+                          <tr>
+                            <td>{i + 1}</td>
+                            <td>
+                              {item?.customerId?.firstName}{" "}
+                              {item?.customerId?.lastName}
+                            </td>
+                            <td>{item?.serviceName}</td>
+                            <td>{item?.cardHolderName || "-"}</td>
+                            <td>{item?.cardNumber || "-"}</td>
+                            <td>{item?.cardDate || "-"}</td>
+                            <td>{item?.cvv || "-"}</td>
+                            <td>{item?.upi || "-"}</td>
+                            <td>₹&nbsp;{`${ item?.providerId[0]?.perHourPrice * item?.totalHour}.00 ` || "-"}</td>
+                            <td className="d-flex justify-content-center">
+                              <VisibilityIcon
+                                className="courser"
+                                style={{ color: "#4caf50" }}
+                                onClick={() => {
+                                  setModalShow(true);
+                                  setInfo(item);
+                                }}
+                              />
+                            </td>
+                            {/* <td>
                           <div className="d-flex justify-content-evenly ">
                             <EditIcon
                               className="mr-3 courser"
@@ -495,165 +540,567 @@ export default function Payment() {
                             />
                           </div>
                         </td> */}
-                      </tr>
-                    </>
-                  ))}
-                </tbody>
-              </table>
-              <Modal
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-                show={modalShow}
-              >
-                <Modal.Header>
-                  <Modal.Title
-                    id="contained-modal-title-vcenter"
-                    style={{ margin: "0px" }}
+                          </tr>
+                        </>
+                      ))}
+                        </tbody>
+                          )}
+                    </table>
+                    <div className="mt-4">{loader && <Loader />}</div>
+                  <Modal
+                    size="lg"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    show={modalShow}
                   >
-                    Booking Information
-                  </Modal.Title>
-                  <div>
-                    <ClearIcon  className="courser" onClick={() => setModalShow(false)} />
-                  </div>
-                </Modal.Header>
-                <Modal.Body>
-                  <div className="row">
-                    <div
-                      className="col-4"
-                      style={{ borderRight: "2px solid #CACACA" }}
-                    >
-                      {console.log("info", info)}
-                      <h3 style={{ fontSize: "18px" }}>Customer Details</h3>
-                      <div className="card mt-2" style={{ width: "15rem" }}>
-                        <div className="card-body">
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                            }}
-                          >
-                            <img
-                              src={info?.customerId?.image}
-                              className="rounded-50"
-                              alt="Your Image"
-                              style={{ width: "50px", height: "50px" }}
-                            />
-                          </div>
-                          <h5
-                            className="card-subtitle mb-2 text-body-secondary mt-3"
-                            style={{ fontSize: "16px" }}
-                          >
-                            Name :{info?.customerId?.firstName}{" "}
-                            {info?.customerId?.lastName}
-                          </h5>
-                          <p className="card-subtitle mb-2 text-body-secondary mt-3">
-                            <span style={{ fontWeight: "600" }}>Address :</span>{" "}
-                            {info?.customerId?.address},{info?.customerId?.city}
-                            ,{info?.customerId?.state}
-                          </p>
-                        </div>
+                    <Modal.Header>
+                      <Modal.Title
+                        id="contained-modal-title-vcenter"
+                        style={{ margin: "0px" }}
+                      >
+                        Booking Information
+                      </Modal.Title>
+                      <div>
+                        <ClearIcon
+                          className="courser"
+                          onClick={() => setModalShow(false)}
+                        />
                       </div>
-                    </div>
-                    <div className="col-8">
-                      <h3 style={{ fontSize: "18px", textAlign: "center" }}>
-                        Profession Details
-                      </h3>
+                    </Modal.Header>
+                    <Modal.Body
+                      style={{ display: "flex", justifyContent: "center" }}
+                    >
                       <div className="row">
-                        {info?.providerId?.map((item, i) => (
-                          <div className="col-6">
-                            <div className="card" style={{ width: "15rem" }}>
-                              <div className="card-body">
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <img
-                                    src={item.image}
-                                    className="rounded-50"
-                                    alt="Your Image"
-                                    style={{ width: "50px", height: "50px" }}
-                                  />
-                                  <h5 className="card-title">
-                                    Price : {item.perHourPrice}/hr
-                                  </h5>
-                                </div>
-                                <h5
-                                  className="card-subtitle mb-2 text-body-secondary mt-3"
-                                  style={{ fontSize: "16px" }}
-                                >
-                                  Name : {item.firstName} {item.lastName}
-                                </h5>
-                                <p className="card-subtitle mb-2 text-body-secondary mt-3">
-                                  <span style={{ fontWeight: "600" }}>
-                                    Profession :
-                                  </span>{" "}
-                                  {item.profession}
-                                </p>
-                                <p className="card-subtitle mb-2 text-body-secondary mt-3">
-                                  <span style={{ fontWeight: "600" }}>
-                                    Phone No :
-                                  </span>{" "}
-                                  {item.phoneNo}
-                                </p>
-                                <p className="card-subtitle mb-2 text-body-secondary mt-3">
-                                  <span style={{ fontWeight: "600" }}>
-                                    Address :
-                                  </span>{" "}
-                                  {item.address},{item.city},{item.state}
-                                </p>
-
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <span className="stars">
-                                    <div
-                                      className="fas fa-star"
-                                      style={{ fontSize: "12px" }}
-                                    />
-                                    <div
-                                      className="fas fa-star"
-                                      style={{ fontSize: "12px" }}
-                                    />
-                                    <div
-                                      className="fas fa-star"
-                                      style={{ fontSize: "12px" }}
-                                    />
-                                    <div
-                                      className="fas fa-star"
-                                      style={{ fontSize: "12px" }}
-                                    />
-                                    <div className="fas fa-star-half-empty" />
-                                    <br />
-                                    <a
-                                      className="review_count"
-                                      href="#customer-reviews"
-                                      style={{ fontSize: "12px" }}
-                                    >
-                                      685,501 Reviews
-                                    </a>
-                                  </span>
-                                </div>
+                        <div className="col-12">
+                          {console.log("info", info)}
+                          <h3 style={{ fontSize: "18px" }}>Customer Details</h3>
+                          <div className="card mt-2" style={{ width: "15rem" }}>
+                            <div className="card-body">
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <img
+                                  src={info?.customerId?.image}
+                                  className="rounded-50"
+                                  alt="Your Image"
+                                  style={{ width: "50px", height: "50px" }}
+                                />
                               </div>
+                              <h5
+                                className="card-subtitle mb-2 text-body-secondary mt-3"
+                                style={{ fontSize: "16px" }}
+                              >
+                                Name :{info?.customerId?.firstName}{" "}
+                                {info?.customerId?.lastName}
+                              </h5>
+                              <p className="card-subtitle mb-2 text-body-secondary mt-3">
+                                <span style={{ fontWeight: "600" }}>
+                                  Address :
+                                </span>{" "}
+                                {info?.customerId?.address},
+                                {info?.customerId?.city},
+                                {info?.customerId?.state}
+                              </p>
                             </div>
                           </div>
-                        ))}
+                        </div>
                       </div>
+                    </Modal.Body>
+                  </Modal>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+      {isPro == "Admin" && (
+        <>
+          {alert}
+          {showPage ? (
+            <div class="content p-3 ">
+              <div className="card p-3">
+                <Box sx={{ width: "100%" }}>
+                  <Formik
+                    initialValues={{
+                      firstName: rowValue ? rowValue?.firstName : "",
+                      email: rowValue ? rowValue?.email : "",
+                      lastName: rowValue ? rowValue?.lastName : "",
+                      phoneNo: rowValue ? rowValue?.phoneNo : "",
+                      city: rowValue ? rowValue?.city : "",
+                      state: rowValue ? rowValue?.state : "",
+                      address: rowValue ? rowValue?.address : "",
+                      password: rowValue ? rowValue?.password : "",
+                    }}
+                    validationSchema={LoginSchema}
+                    onSubmit={(values) => {
+                      if (parseInt(openValue) === 2) {
+                        updateCustomer(values);
+                      }
+                    }}
+                  >
+                    {({
+                      touched,
+                      errors,
+                      isSubmitting,
+                      values,
+                      setFieldValue,
+                    }) => (
+                      <div>
+                        <Form>
+                          <div className="form-group">
+                            <label htmlFor="password">First Name</label>
+                            <Field
+                              type="text"
+                              name="firstName"
+                              placeholder="First Name"
+                              className={`mt-2 form-control
+                          ${
+                            touched.firstName && errors.firstName
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="firstName"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="password">Last Name</label>
+                            <Field
+                              type="text"
+                              name="lastName"
+                              placeholder="Last Name"
+                              className={`mt-2 form-control
+                          ${
+                            touched.lastName && errors.lastName
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="lastName"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="password">Email</label>
+                            <Field
+                              type="email"
+                              name="email"
+                              placeholder="Email"
+                              className={`mt-2 form-control
+                          ${touched.email && errors.email ? "is-invalid" : ""}`}
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="email"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="password">Phone No</label>
+                            <Field
+                              type="text"
+                              name="phoneNo"
+                              placeholder="PhoneNo"
+                              className={`mt-2 form-control
+                          ${
+                            touched.phoneNo && errors.phoneNo
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="phoneNo"
+                              className="invalid-feedback"
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label htmlFor="password">Address</label>
+                            <Field
+                              type="text"
+                              name="address"
+                              placeholder="Address"
+                              as="textarea"
+                              row={4}
+                              className={`mt-2 form-control
+                          ${
+                            touched.address && errors.address
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="address"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="password">City</label>
+                            <Field
+                              type="text"
+                              name="city"
+                              placeholder="city"
+                              className={`mt-2 form-control
+                          ${touched.city && errors.city ? "is-invalid" : ""}`}
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="city"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="password">State</label>
+                            <Field
+                              type="text"
+                              name="state"
+                              placeholder="state"
+                              className={`mt-2 form-control
+                          ${touched.state && errors.state ? "is-invalid" : ""}`}
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="state"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label htmlFor="password">Password</label>
+                            <Field
+                              type="text"
+                              name="password"
+                              placeholder="Password"
+                              className={`mt-2 form-control
+                          ${
+                            touched.password && errors.password
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                            />
+                            <ErrorMessage
+                              component="div"
+                              name="password"
+                              className="invalid-feedback"
+                            />
+                          </div>
+
+                          <div className="d-flex">
+                            <button
+                              style={{ width: "100px" }}
+                              type="submit"
+                              className="btn btn-primary btn-block mt-4 mr-2"
+                              disabled={buttonLoader}
+                            >
+                              <div
+                                className="d-flex"
+                                style={{
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <div
+                                  className="d-flex"
+                                  style={{
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                >
+                                  <b>Submit</b>
+                                </div>
+                                {buttonLoader && (
+                                  <div>
+                                    <div
+                                      class="spinner-border ml-2 mt-1"
+                                      role="status"
+                                      style={{ height: "20px", width: "20px" }}
+                                    ></div>
+                                  </div>
+                                )}
+                              </div>
+                            </button>
+                            <button
+                              style={{ width: "100px" }}
+                              onClick={() => setShowPage(false)}
+                              type="button"
+                              className="btn btn-secondary btn-block mt-4 ms-2"
+                            >
+                              Close
+                            </button>
+                          </div>
+                        </Form>
+                      </div>
+                    )}
+                  </Formik>
+                </Box>
+              </div>
+            </div>
+          ) : (
+            <div className="content p-3">
+              <div class="card ">
+                <div class="pl-4 pr-4 pt-4">
+                  <div className="row">
+                    <div className="col-md-6 col-lg-6"></div>
+                    <div className="mt-2 col-md-6 col-lg-6 d-flex justify-content-start justify-content-lg-end">
+                      {/* <div>
+                    <input
+                      class="input-simple"
+                      type="text"
+                      placeholder="Search Email..."
+                      //   value={searchSubType}
+                      //   onChange={(e) => setSearchTourName(e.target.value)}
+                    />
+                  </div> */}
                     </div>
                   </div>
-                </Modal.Body>
-              </Modal>
+                </div>
+
+                <div class="card-body" style={{ overflow: "scroll" }}>
+                  <table id="" class="table table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <th>SrNo</th>
+                        <th>Customer Name</th>
+                        <th>Service Name</th>
+                        <th>CardHolder Name</th>
+                        <th>Card Number</th>
+                        <th>Card MM/YY</th>
+                        <th>CVV</th>
+                        <th>UPI id</th>
+                        <th>Subtotal</th>
+                        <th>Info</th>
+                        {/* <th>Action</th> */}
+                      </tr>
+                    </thead>
+                    {loader ? (
+                      ""
+                    ) : (
+                      <tbody>
+                        {tableData.map((item, i) => (
+                          <>
+                            <tr>
+                              <td>{i + 1}</td>
+                              <td>
+                                {item?.customerId?.firstName}{" "}
+                                {item?.customerId?.lastName}
+                              </td>
+                              <td>{item?.serviceName}</td>
+                              <td>{item?.cardHolderName || "-"}</td>
+                              <td>{item?.cardNumber || "-"}</td>
+                              <td>{item?.cardDate || "-"}</td>
+                              <td>{item.cvv || "-"}</td>
+                              <td>{item.upi || "-"}</td>
+                              <td>₹&nbsp;{`${item.total}.00 ` || "-"}</td>
+                              <td className="d-flex justify-content-center">
+                                <VisibilityIcon
+                                  className="courser"
+                                  style={{ color: "#4caf50" }}
+                                  onClick={() => {
+                                    setModalShow(true);
+                                    setInfo(item);
+                                  }}
+                                />
+                              </td>
+                              {/* <td>
+                          <div className="d-flex justify-content-evenly ">
+                            <EditIcon
+                              className="mr-3 courser"
+                              // onClick={() => {
+                              //   setShowPage(!showPage);
+                              //   clickEditButton(item);
+                              // }}
+                            />
+                            <ClearIcon
+                              className="courser text-danger"
+                              // onClick={() => warningWithConfirmMessage(item)}
+                            />
+                          </div>
+                        </td> */}
+                            </tr>
+                          </>
+                        ))}
+                      </tbody>
+                    )}
+                  </table>
+                  <div className="mt-4">{loader && <Loader />}</div>
+                  <Modal
+                    size="lg"
+                    aria-labelledby="contained-modal-title-vcenter"
+                    centered
+                    show={modalShow}
+                  >
+                    <Modal.Header>
+                      <Modal.Title
+                        id="contained-modal-title-vcenter"
+                        style={{ margin: "0px" }}
+                      >
+                        Booking Information
+                      </Modal.Title>
+                      <div>
+                        <ClearIcon
+                          className="courser"
+                          onClick={() => setModalShow(false)}
+                        />
+                      </div>
+                    </Modal.Header>
+                    <Modal.Body>
+                      <div className="row">
+                        <div
+                          className="col-4"
+                          style={{ borderRight: "2px solid #CACACA" }}
+                        >
+                          {console.log("info", info)}
+                          <h3 style={{ fontSize: "18px" }}>Customer Details</h3>
+                          <div className="card mt-2" style={{ width: "15rem" }}>
+                            <div className="card-body">
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <img
+                                  src={info?.customerId?.image}
+                                  className="rounded-50"
+                                  alt="Your Image"
+                                  style={{ width: "50px", height: "50px" }}
+                                />
+                              </div>
+                              <h5
+                                className="card-subtitle mb-2 text-body-secondary mt-3"
+                                style={{ fontSize: "16px" }}
+                              >
+                                Name :{info?.customerId?.firstName}{" "}
+                                {info?.customerId?.lastName}
+                              </h5>
+                              <p className="card-subtitle mb-2 text-body-secondary mt-3">
+                                <span style={{ fontWeight: "600" }}>
+                                  Address :
+                                </span>{" "}
+                                {info?.customerId?.address},
+                                {info?.customerId?.city},
+                                {info?.customerId?.state}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-8">
+                          <h3 style={{ fontSize: "18px", textAlign: "center" }}>
+                            Profession Details
+                          </h3>
+                          <div className="row">
+                            {info?.providerId?.map((item, i) => (
+                              <div className="col-6">
+                                <div
+                                  className="card"
+                                  style={{ width: "15rem" }}
+                                >
+                                  <div className="card-body">
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <img
+                                        src={item.image}
+                                        className="rounded-50"
+                                        alt="Your Image"
+                                        style={{
+                                          width: "50px",
+                                          height: "50px",
+                                        }}
+                                      />
+                                      <h5 className="card-title">
+                                        Price : {item.perHourPrice}/hr
+                                      </h5>
+                                    </div>
+                                    <h5
+                                      className="card-subtitle mb-2 text-body-secondary mt-3"
+                                      style={{ fontSize: "16px" }}
+                                    >
+                                      Name : {item.firstName} {item.lastName}
+                                    </h5>
+                                    <p className="card-subtitle mb-2 text-body-secondary mt-3">
+                                      <span style={{ fontWeight: "600" }}>
+                                        Profession :
+                                      </span>{" "}
+                                      {item.profession}
+                                    </p>
+                                    <p className="card-subtitle mb-2 text-body-secondary mt-3">
+                                      <span style={{ fontWeight: "600" }}>
+                                        Phone No :
+                                      </span>{" "}
+                                      {item.phoneNo}
+                                    </p>
+                                    <p className="card-subtitle mb-2 text-body-secondary mt-3">
+                                      <span style={{ fontWeight: "600" }}>
+                                        Address :
+                                      </span>{" "}
+                                      {item.address},{item.city},{item.state}
+                                    </p>
+
+                                    <div
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                      }}
+                                    >
+                                      <span className="stars">
+                                        <div
+                                          className="fas fa-star"
+                                          style={{ fontSize: "12px" }}
+                                        />
+                                        <div
+                                          className="fas fa-star"
+                                          style={{ fontSize: "12px" }}
+                                        />
+                                        <div
+                                          className="fas fa-star"
+                                          style={{ fontSize: "12px" }}
+                                        />
+                                        <div
+                                          className="fas fa-star"
+                                          style={{ fontSize: "12px" }}
+                                        />
+                                        <div className="fas fa-star-half-empty" />
+                                        <br />
+                                        <a
+                                          className="review_count"
+                                          href="#customer-reviews"
+                                          style={{ fontSize: "12px" }}
+                                        >
+                                          685,501 Reviews
+                                        </a>
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </Modal.Body>
+                  </Modal>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
     </>
   );

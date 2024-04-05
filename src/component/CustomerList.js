@@ -9,6 +9,7 @@ import axios from "axios";
 import SweetAlert from "react-bootstrap-sweetalert";
 import { toast } from "react-toastify";
 import DataServices from "../services/requestApi";
+import Loader from "../Loader/Loader";
 
 export default function CustomerList() {
   const [showPage, setShowPage] = useState(false);
@@ -444,37 +445,41 @@ export default function CustomerList() {
                     <th>Action</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {tableData.map((item, i) => (
-                    <>
-                      <tr>
-                        <td>{i + 1}</td>
-                        <td>
-                          {item?.firstName} {item?.lastName}
-                        </td>
-                        <td>{item?.email}</td>
+                {loader ? (
+                  ""
+                ) : (
+                  <tbody>
+                    {tableData.map((item, i) => (
+                      <>
+                        <tr>
+                          <td>{i + 1}</td>
+                          <td>
+                            {item?.firstName} {item?.lastName}
+                          </td>
+                          <td>{item?.email}</td>
 
-                        <td>{item?.phoneNo ? item?.phoneNo : "-"}</td>
-                        <td>{item?.address ? item?.address : "-"}</td>
-                        <td className="d-flex justify-content-evenly ">
-                          <EditIcon
-                            className="mr-3 courser"
-                            onClick={() => {
-                              setShowPage(!showPage);
-                              clickEditButton(item);
-                            }}
-                          />
-                          <ClearIcon
-                            className="courser text-danger"
-                            onClick={() => warningWithConfirmMessage(item)}
-                          />
-                        </td>
-                      </tr>
-                    </>
-                  ))}
-                </tbody>
+                          <td>{item?.phoneNo ? item?.phoneNo : "-"}</td>
+                          <td>{item?.address ? item?.address : "-"}</td>
+                          <td className="d-flex justify-content-evenly ">
+                            <EditIcon
+                              className="mr-3 courser"
+                              onClick={() => {
+                                setShowPage(!showPage);
+                                clickEditButton(item);
+                              }}
+                            />
+                            <ClearIcon
+                              className="courser text-danger"
+                              onClick={() => warningWithConfirmMessage(item)}
+                            />
+                          </td>
+                        </tr>
+                      </>
+                    ))}
+                  </tbody>
+                )}
               </table>
-              <div className="mt-4">{loader && "Loading..."}</div>
+              <div className="mt-4">{loader && <Loader />}</div>
             </div>
           </div>
         </div>

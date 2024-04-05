@@ -12,6 +12,7 @@ import SweetAlert from "react-bootstrap-sweetalert";
 import { toast } from "react-toastify";
 import DataServices from "../services/requestApi";
 import { Button, Modal } from "react-bootstrap";
+import Loader from "../Loader/Loader";
 
 export default function Booking() {
   const [showPage, setShowPage] = useState(false);
@@ -446,7 +447,10 @@ export default function Booking() {
                     <th>Info</th>
              
                   </tr>
-                </thead>
+                  </thead>
+                  {loader ? (
+            ""
+          ) : (
                 <tbody>
                   {tableData.map((item, i) => (
                     <>
@@ -493,8 +497,10 @@ export default function Booking() {
                       </tr>
                     </>
                   ))}
-                </tbody>
-              </table>
+                    </tbody>
+                       )}
+                </table>
+                <div className="mt-4">{loader && <Loader />}</div>
               <Modal
                 size="lg"
                 aria-labelledby="contained-modal-title-vcenter"

@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import DataServices from "../services/requestApi";
 import logo from "../img/logo.png";
 import user_icon from "../img/user.png";
+import Loader from "../Loader/Loader";
 
 export default function Profile() {
   const isPro = sessionStorage.getItem("role");
@@ -109,7 +110,7 @@ export default function Profile() {
         <div className="card p-3">
           <Box sx={{ width: "100%" }}>
             {loader
-              ? "Loader..."
+              ? (<div className="mt-4">{loader && <Loader />}</div>)
               : isPro == "Provider" && (
                   <Formik
                     initialValues={{
@@ -702,6 +703,7 @@ export default function Profile() {
               </Formik>
             )}
           </Box>
+          
         </div>
       </div>
     </div>

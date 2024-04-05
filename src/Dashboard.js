@@ -60,7 +60,8 @@ export default function Dashboard() {
           let sum = 0;
           console.log("res.data::: ", res?.data?.data);
           res?.data?.data.map((data) => {
-            sum = sum + data.total;
+            console.log('data', data)
+            sum = data?.providerId[0]?.perHourPrice * data?.totalHour;
           });
           setTotalIncome(sum);
           setTotalPlayerData(res?.data?.data.length);
@@ -279,7 +280,7 @@ export default function Dashboard() {
                   <div className="col-lg-3 col-6">
                     <div
                       className="small-box"
-                      style={{ backgroundColor: "#ffab39" }}
+                      style={{ backgroundColor: "#415ce7" }}
                     >
                       <div className="inner p-lg-4 p-md-3">
                         <div
@@ -316,7 +317,7 @@ export default function Dashboard() {
                   <div className="col-lg-3 col-6 ">
                     <div
                       className="small-box "
-                      style={{ backgroundColor: "#ca4ddd" }}
+                      style={{ backgroundColor: "#2ec268" }}
                     >
                       <div className="inner p-lg-4 p-md-3">
                         <div

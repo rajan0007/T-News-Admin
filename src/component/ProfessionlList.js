@@ -9,6 +9,7 @@ import axios from "axios";
 import SweetAlert from "react-bootstrap-sweetalert";
 import { toast } from "react-toastify";
 import DataServices from "../services/requestApi";
+import Loader from "../Loader/Loader";
 
 export default function ProfessionlList() {
   const [showPage, setShowPage] = useState(false);
@@ -142,7 +143,7 @@ export default function ProfessionlList() {
 
   const deleteData = async (e) => {
     console.log("e===>", e._id);
-    const dto = { id: e._id }; 
+    const dto = { id: e._id };
     try {
       const { data } = await DataServices.DeleteProvider(dto);
       if (data?.status) {
@@ -152,12 +153,9 @@ export default function ProfessionlList() {
         toast.warning(data?.message);
       }
     } catch (error) {
-      console.log("error",error)
+      console.log("error", error);
     }
-    
   };
-
-  
 
   const successEdit = (msg) => {
     console.log("donw");
@@ -280,38 +278,36 @@ export default function ProfessionlList() {
                       </div>
                       <div className="form-group">
                         <label htmlFor="password">Profession</label>
-                        
-                         <Field
-                              name="profession"
-                              as="select"
-                              className={`mt-2 form-control
+
+                        <Field
+                          name="profession"
+                          as="select"
+                          className={`mt-2 form-control
                           ${
                             touched.profession && errors.profession
                               ? "is-invalid"
                               : ""
                           }`}
-                            >
-                              <option value="">Select your Service</option>
-                              <option value="cleaning">Cleaning</option>
-                              <option value="tv_electronics">
-                                TV and Electronics
-                              </option>
-                              <option value="handyman">General Handyman</option>
-                              <option value="furniture_assembly">
-                                Assembly
-                              </option>
-                              <option value="plumbing">Plumbing</option>
-                              <option value="electrical">Electrical</option>
-                              <option value="painting">Painting</option>
-                              <option value="ro_ac">Ro & Ac</option>
-                              <option value="car_washer">Car Washer</option>
-                            </Field>
-                            <ErrorMessage
-                              component="div"
-                              name="profession"
-                              className="invalid-feedback mt-0"
-                              style={{ display: "flex" }}
-                            />
+                        >
+                          <option value="">Select your Service</option>
+                          <option value="cleaning">Cleaning</option>
+                          <option value="tv_electronics">
+                            TV and Electronics
+                          </option>
+                          <option value="handyman">General Handyman</option>
+                          <option value="furniture_assembly">Assembly</option>
+                          <option value="plumbing">Plumbing</option>
+                          <option value="electrical">Electrical</option>
+                          <option value="painting">Painting</option>
+                          <option value="ro_ac">Ro & Ac</option>
+                          <option value="car_washer">Car Washer</option>
+                        </Field>
+                        <ErrorMessage
+                          component="div"
+                          name="profession"
+                          className="invalid-feedback mt-0"
+                          style={{ display: "flex" }}
+                        />
                       </div>
                       <div className="form-group">
                         <label htmlFor="password">City</label>
@@ -464,36 +460,40 @@ export default function ProfessionlList() {
                     <th>Action</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {tableData.map((item, i) => (
-                    <>
-                      <tr>
-                        <td>{i + 1}</td>
-                        <td>{item?.email}</td>
-                        <td>
-                          {item?.firstName} {item?.lastName}
-                        </td>
-                        <td>{item?.phoneNo}</td>
-                        <td>{item?.profession}</td>
-                        <td className="d-flex justify-content-evenly ">
-                          <EditIcon
-                            className="mr-3 courser"
-                            onClick={() => {
-                              setShowPage(!showPage);
-                              clickEditButton(item);
-                            }}
-                          />
-                          <ClearIcon
-                            className="courser text-danger"
-                            onClick={() => warningWithConfirmMessage(item)}
-                          />
-                        </td>
-                      </tr>
-                    </>
-                  ))}
-                </tbody>
+                {loader ? (
+                  ""
+                ) : (
+                  <tbody>
+                    {tableData.map((item, i) => (
+                      <>
+                        <tr>
+                          <td>{i + 1}</td>
+                          <td>{item?.email}</td>
+                          <td>
+                            {item?.firstName} {item?.lastName}
+                          </td>
+                          <td>{item?.phoneNo}</td>
+                          <td>{item?.profession}</td>
+                          <td className="d-flex justify-content-evenly ">
+                            <EditIcon
+                              className="mr-3 courser"
+                              onClick={() => {
+                                setShowPage(!showPage);
+                                clickEditButton(item);
+                              }}
+                            />
+                            <ClearIcon
+                              className="courser text-danger"
+                              onClick={() => warningWithConfirmMessage(item)}
+                            />
+                          </td>
+                        </tr>
+                      </>
+                    ))}
+                  </tbody>
+                )}
               </table>
-              <div className="mt-4">{loader && "Loading..."}</div>
+              <div className="mt-4">{loader && <Loader />}</div>
             </div>
           </div>
         </div>
