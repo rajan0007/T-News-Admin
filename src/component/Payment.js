@@ -93,14 +93,14 @@ export default function Payment() {
   };
   if (isPro === "Provider") {
     let sum = 0;
-  
+
     const getTotal = () => {
       tableData.providerId.forEach((item) => {
         sum += item.perHourPrice * tableData.totalHour;
       });
     };
   }
- 
+
   // if (searchTourName) {
   //   console.log("tableData 222 ---", tableData, tableData.length > 0);
   //   data = tableData.filter((item) => {
@@ -464,9 +464,16 @@ export default function Payment() {
               <div class="card ">
                 <div class="pl-4 pr-4 pt-4">
                   <div className="row">
+                    <div className="col-md-6 col-lg-6">
+                      <h4>Payment</h4>
+                    </div>
+                  </div>
+                </div>
+                {/* <div class="pl-4 pr-4 pt-4">
+                  <div className="row">
                     <div className="col-md-6 col-lg-6"></div>
                     <div className="mt-2 col-md-6 col-lg-6 d-flex justify-content-start justify-content-lg-end">
-                      {/* <div>
+                      <div>
                     <input
                       class="input-simple"
                       type="text"
@@ -474,11 +481,10 @@ export default function Payment() {
                       //   value={searchSubType}
                       //   onChange={(e) => setSearchTourName(e.target.value)}
                     />
-                  </div> */}
+                  </div>
                     </div>
                   </div>
-                </div>
-
+                </div> */}
                 <div class="card-body" style={{ overflow: "scroll" }}>
                   <table id="" class="table table-bordered table-striped">
                     <thead>
@@ -495,37 +501,43 @@ export default function Payment() {
                         <th>Info</th>
                         {/* <th>Action</th> */}
                       </tr>
-                      </thead>
-                      {loader ? (
+                    </thead>
+                    {loader ? (
                       ""
                     ) : (
-                    <tbody>
-                      {tableData.map((item, i) => (
-                        <>
-                          <tr>
-                            <td>{i + 1}</td>
-                            <td>
-                              {item?.customerId?.firstName}{" "}
-                              {item?.customerId?.lastName}
-                            </td>
-                            <td>{item?.serviceName}</td>
-                            <td>{item?.cardHolderName || "-"}</td>
-                            <td>{item?.cardNumber || "-"}</td>
-                            <td>{item?.cardDate || "-"}</td>
-                            <td>{item?.cvv || "-"}</td>
-                            <td>{item?.upi || "-"}</td>
-                            <td>₹&nbsp;{`${ item?.providerId[0]?.perHourPrice * item?.totalHour}.00 ` || "-"}</td>
-                            <td className="d-flex justify-content-center">
-                              <VisibilityIcon
-                                className="courser"
-                                style={{ color: "#4caf50" }}
-                                onClick={() => {
-                                  setModalShow(true);
-                                  setInfo(item);
-                                }}
-                              />
-                            </td>
-                            {/* <td>
+                      <tbody>
+                        {tableData.map((item, i) => (
+                          <>
+                            <tr>
+                              <td>{i + 1}</td>
+                              <td>
+                                {item?.customerId?.firstName}{" "}
+                                {item?.customerId?.lastName}
+                              </td>
+                              <td>{item?.serviceName}</td>
+                              <td>{item?.cardHolderName || "-"}</td>
+                              <td>{item?.cardNumber || "-"}</td>
+                              <td>{item?.cardDate || "-"}</td>
+                              <td>{item?.cvv || "-"}</td>
+                              <td>{item?.upi || "-"}</td>
+                              <td>
+                                ₹&nbsp;
+                                {`${
+                                  item?.providerId[0]?.perHourPrice *
+                                  item?.totalHour
+                                }.00 ` || "-"}
+                              </td>
+                              <td className="d-flex justify-content-center">
+                                <VisibilityIcon
+                                  className="courser"
+                                  style={{ color: "#4caf50" }}
+                                  onClick={() => {
+                                    setModalShow(true);
+                                    setInfo(item);
+                                  }}
+                                />
+                              </td>
+                              {/* <td>
                           <div className="d-flex justify-content-evenly ">
                             <EditIcon
                               className="mr-3 courser"
@@ -540,13 +552,13 @@ export default function Payment() {
                             />
                           </div>
                         </td> */}
-                          </tr>
-                        </>
-                      ))}
-                        </tbody>
-                          )}
-                    </table>
-                    <div className="mt-4">{loader && <Loader />}</div>
+                            </tr>
+                          </>
+                        ))}
+                      </tbody>
+                    )}
+                  </table>
+                  <div className="mt-4">{loader && <Loader />}</div>
                   <Modal
                     size="lg"
                     aria-labelledby="contained-modal-title-vcenter"
@@ -847,12 +859,19 @@ export default function Payment() {
             </div>
           ) : (
             <div className="content p-3">
-              <div class="card ">
+                <div class="card ">
                 <div class="pl-4 pr-4 pt-4">
+                  <div className="row">
+                    <div className="col-md-6 col-lg-6">
+                      <h4>Payment</h4>
+                    </div>
+                  </div>
+                </div>
+                {/* <div class="pl-4 pr-4 pt-4">
                   <div className="row">
                     <div className="col-md-6 col-lg-6"></div>
                     <div className="mt-2 col-md-6 col-lg-6 d-flex justify-content-start justify-content-lg-end">
-                      {/* <div>
+                      <div>
                     <input
                       class="input-simple"
                       type="text"
@@ -860,10 +879,10 @@ export default function Payment() {
                       //   value={searchSubType}
                       //   onChange={(e) => setSearchTourName(e.target.value)}
                     />
-                  </div> */}
+                  </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 <div class="card-body" style={{ overflow: "scroll" }}>
                   <table id="" class="table table-bordered table-striped">

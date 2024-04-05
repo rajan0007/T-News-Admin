@@ -418,8 +418,15 @@ export default function CustomerList() {
           <div class="card ">
             <div class="pl-4 pr-4 pt-4">
               <div className="row">
+                <div className="col-md-6 col-lg-6">
+                  <h4>Customer List</h4>
+                </div>
+              </div>
+            </div>
+            {/*<div class="pl-4 pr-4 pt-4">
+              <div className="row">
                 <div className="col-md-6 col-lg-6"></div>
-                {/* <div className="mt-2 col-md-6 col-lg-6 d-flex justify-content-start justify-content-lg-end">
+                <div className="mt-2 col-md-6 col-lg-6 d-flex justify-content-start justify-content-lg-end">
                   <div>
                     <input
                       class="input-simple"
@@ -429,9 +436,9 @@ export default function CustomerList() {
                       //   onChange={(e) => setSearchTourName(e.target.value)}
                     />
                   </div>
-                </div> */}
+                </div> 
               </div>
-            </div>
+            </div>*/}
 
             <div class="card-body" style={{ overflow: "scroll" }}>
               <table id="" class="table table-bordered table-striped">

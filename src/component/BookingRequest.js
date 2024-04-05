@@ -142,7 +142,7 @@ export default function BookingRequest() {
           <div class="pl-4 pr-4 pt-4">
             <div className="row">
               <div className="col-md-6 col-lg-6">
-                <h4>Service Request</h4>
+                <h4>Booking Request</h4>
               </div>
             </div>
           </div>
