@@ -1,8 +1,8 @@
 import axios from "axios";
 let AuthToken = sessionStorage.getItem("token");
 console.log("token::: ", AuthToken);
-export const BASEURL = "http://54.175.30.202:5500/";
-// export const BASEURL = "http://localhost:5500/";
+export const BASEURL = "http://54.175.30.202:5001/";
+// export const BASEURL = "http://localhost:5001/";
 
 const Headers = {
   "Access-Control-Allow-Origin": "*",

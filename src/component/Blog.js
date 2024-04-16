@@ -16,6 +16,8 @@ import user_icon from "../img/user.png";
 import DataServices from "../services/requestApi";
 import { toast } from "react-toastify";
 import Edit from "@mui/icons-material/Edit";
+import moment from "moment";
+import Pagination from "../Pagination/Pagination";
 
 export default function Blog() {
   const [showPage, setShowPage] = useState(false);
@@ -35,6 +37,10 @@ export default function Blog() {
     start: 0,
     end: showPrePage,
   });
+  const [totalLength, setTotalLength] = React.useState("");
+  const [recordLength, setRecordLength] = React.useState(10);
+  const [pageNumber, setPageNumber] = React.useState(1);
+  const [selectedTypeFilter, setSelectedTypeFilter] = useState("");
 
   const onPaginationChange = (start, end) => {
     setPagination({ start: start, end: end });
@@ -48,6 +54,8 @@ export default function Blog() {
   const LoginSchema = Yup.object().shape({
     title: Yup.string().required("required"),
     desc: Yup.string().required("required"),
+    categories: Yup.string().required("required"),
+    type: Yup.string().required("required"),
   });
 
   React.useEffect(() => {
@@ -64,6 +72,7 @@ export default function Blog() {
         setLoader(false);
         console.log("dataTable.dataRows :::", response.data.data);
         setTableData(response.data.data);
+        setTotalLength(response?.data?.length);
       })
       .catch((error) => {
         console.log("getBranch error :::", error);
@@ -143,7 +152,7 @@ export default function Blog() {
 
   const addNewTournament = async (value) => {
     const { data } = await DataServices.addBlog(value);
-    console.log("data::: ", data.data._id);
+    console.log("data::: ", data);
     if (data?.status) {
       const formData = new FormData();
       formData.append("file", selectedImage);
@@ -308,7 +317,19 @@ export default function Blog() {
       }
     }
   };
+  const handleTypeFilterChange = (event) => {
+    setSelectedTypeFilter(event.target.value);
+  };
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("");
+  const [showFullDesc, setShowFullDesc] = useState({});
 
+  // Function to toggle full description display
+  const toggleFullDesc = (index) => {
+    setShowFullDesc((prevState) => ({
+      ...prevState,
+      [index]: !prevState[index],
+    }));
+  };
   return (
     <>
       {alert}
@@ -320,6 +341,8 @@ export default function Blog() {
                 initialValues={{
                   title: rowValue ? rowValue?.title : "",
                   desc: rowValue ? rowValue?.desc : "",
+                  categories: rowValue ? rowValue?.categories : "",
+                  type: rowValue ? rowValue?.type : "",
                 }}
                 validationSchema={LoginSchema}
                 onSubmit={(values) => {
@@ -341,6 +364,54 @@ export default function Blog() {
                     <Form>
                       <div className="row">
                         <div className="col-9">
+                          <h5 className="mt-3 text-start">Categories</h5>
+                          <div className="form-group">
+                            <Field
+                              disabled={!isEdit}
+                              name="categories"
+                              as="select"
+                              className={`mt-2 form-select form-control
+                             `}
+                            >
+                              <option value="">Select your categories</option>
+                              <option value="News">News</option>
+                              <option value="Sports">Sports</option>
+                              <option value="Business">Business</option>
+                              <option value="Politics">Politics</option>
+                              <option value="Technology">Technology</option>
+                              <option value="Entertainment">
+                                Entertainment
+                              </option>
+                            </Field>
+                            <ErrorMessage
+                              component="div"
+                              name="categories"
+                              className="invalid-feedback"
+                            />
+                          </div>
+                          <h5 className="mt-3 text-start">Type</h5>
+                          <div className="form-group">
+                            <Field
+                              disabled={!isEdit}
+                              name="type"
+                              as="select"
+                              className={`mt-2 form-select form-control 
+                             `}
+                            >
+                              <option value="">Select your type</option>
+                              <option value="International">
+                                International
+                              </option>
+                              <option value="Tranding">Tranding</option>
+                              <option value="Popular">Popular</option>
+                              <option value="Featured">Featured</option>
+                            </Field>
+                            <ErrorMessage
+                              component="div"
+                              name="type"
+                              className="invalid-feedback"
+                            />
+                          </div>
                           <div className="form-group">
                             <label htmlFor="password" className="mt-3">
                               Title
@@ -356,24 +427,6 @@ export default function Blog() {
                             <ErrorMessage
                               component="div"
                               name="title"
-                              className="invalid-feedback"
-                            />
-                          </div>
-                          <div className="form-group">
-                            <label htmlFor="password" className="mt-3">
-                              Description
-                            </label>
-                            <Field
-                              type="text"
-                              disabled={!isEdit}
-                              name="desc"
-                              placeholder="Enter desc"
-                              className={`mt-2 form-control
-                          ${touched.desc && errors.desc ? "is-invalid" : ""}`}
-                            />
-                            <ErrorMessage
-                              component="div"
-                              name="desc"
                               className="invalid-feedback"
                             />
                           </div>
@@ -450,7 +503,26 @@ export default function Blog() {
                           </div>
                         </div>
                       </div>
-
+                      <div className="form-group">
+                        <label htmlFor="password" className="mt-3">
+                          Description
+                        </label>
+                        <Field
+                          type="text"
+                          disabled={!isEdit}
+                          as="textarea"
+                          rows={8}
+                          name="desc"
+                          placeholder="Enter desc"
+                          className={`mt-2 form-control
+                          ${touched.desc && errors.desc ? "is-invalid" : ""}`}
+                        />
+                        <ErrorMessage
+                          component="div"
+                          name="desc"
+                          className="invalid-feedback"
+                        />
+                      </div>
                       <div
                         style={{
                           display: "flex",
@@ -539,21 +611,67 @@ export default function Blog() {
                   Add New
                 </button>
               </div>
-              <div className="col-7">
+              <div className="col-2">
                 <h3 class="card-title">
                   <b>Blog List</b>
                 </h3>
               </div>
+              <div className="col-5">
+                  <div className="pl-4 pr-4 pt-3">
+                    <div className="d-flex" style={{    justifyContent: 'space-evenly'}}>
+                    <div class="form-group">
+                    <label for="typeFilter" class="form-label">
+                       Type:
+                    </label>
+                    <select
+                      id="typeFilter"
+                      class="form-select"
+                      value={selectedTypeFilter}
+                      onChange={handleTypeFilterChange}
+                    >
+                      <option value="">All Types</option>
+                      <option value="International">International</option>
+                      <option value="Trending">Trending</option>
+                      <option value="Popular">Popular</option>
+                      <option value="Featured">Featured</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label htmlFor="categoryFilter">
+                    Categories:
+                    </label>
+                    <select
+                      id="categoryFilter"
+                      value={selectedCategoryFilter}
+                      onChange={(e) =>
+                        setSelectedCategoryFilter(e.target.value)
+                      }
+                    >
+                      <option value="">All Categories</option>
+                      <option value="News">News</option>
+                      <option value="Sports">Sports</option>
+                      <option value="Business">Business</option>
+                      <option value="Politics">Politics</option>
+                      <option value="Technology">Technology</option>
+                      <option value="Entertainment">Entertainment</option>
+                    </select>
+                  </div>
+                    </div>
+                 
+                </div>
+              </div>
             </div>
-
             <div class="card-body" style={{ overflow: "scroll" }}>
               <table id="" class="table table-bordered table-striped">
                 <thead>
                   <tr>
                     <th>SrNo</th>
-
+                    <th>Categories</th>
+                    <th>Type</th>
+                    <th>Image</th>
                     <th>Title</th>
                     <th>Description</th>
+                    <th>Date{" / "}Time</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -564,29 +682,73 @@ export default function Blog() {
                       <>
                         {tableData?.length > 0 ? (
                           <>
-                            {tableData?.map((item, index) => (
-                              <>
-                                <tr key={index}>
-                                  <td>{index + 1 + pagination.start}</td>
+                            {tableData
+                              ?.filter(
+                                (item) =>
+                                  (!selectedTypeFilter ||
+                                    item.type === selectedTypeFilter) &&
+                                  (!selectedCategoryFilter ||
+                                    item.categories === selectedCategoryFilter)
+                              )
+                              .slice(pagination.start, pagination.end)
+                              .map((item, index) => (
+                                <>
+                                  <tr key={index}>
+                                    <td>{index + 1 + pagination.start}</td>
+                                    <td>{item.categories}</td>
+                                    <td>{item.type}</td>
+                                    <td style={{ width: "10%", height: "25%" }}>
+                                      <div>
+                                        <img
+                                          src={item.image}
+                                          alt=""
+                                          width="100%"
+                                          height="100%"
+                                        />
+                                      </div>
+                                    </td>
+                                    <td>{item.title}</td>
+                                    <td>
+                                    {showFullDesc[index]
+                    ? item.desc
+                    : `${item.desc.split(" ").slice(0, 50).join(" ")}${
+                        item.desc.split(" ").length > 50 ? " ..." : ""
+                      }`}
+                  {item.desc.split(" ").length > 50 && (
+                                        <button
+                                        className="btn btn-link"
+                      onClick={() => toggleFullDesc(index)}
+                      style={{ border: "none", background: "none", cursor: "pointer" }}
+                    >
+                      {showFullDesc[index] ? "Show less" : "Show more"}
+                    </button>
+                  )}
+                                    </td>
+                                    <td>
+                                      {moment(item.createdAt).format(
+                                        "DD/MM/YYYY"
+                                      )}
+                                      {" / "}
+                                      {moment(item.createdAt).format(
+                                        "h:mm:ss a"
+                                      )}
+                                    </td>
+                                    <td className="d-flex justify-content-evenly ">
+                                      <EditIcon
+                                        className="mr-3 courser"
+                                        onClick={() => clickEditButton(item)}
+                                      />
 
-                                  <td>{item.title}</td>
-                                  <td>{item.desc}</td>
-                                  <td className="d-flex justify-content-evenly ">
-                                    <EditIcon
-                                      className="mr-3 courser"
-                                      onClick={() => clickEditButton(item)}
-                                    />
-
-                                    <ClearIcon
-                                      className="courser text-danger"
-                                      onClick={() =>
-                                        warningWithConfirmMessage(item)
-                                      }
-                                    />
-                                  </td>
-                                </tr>
-                              </>
-                            ))}
+                                      <ClearIcon
+                                        className="courser text-danger"
+                                        onClick={() =>
+                                          warningWithConfirmMessage(item)
+                                        }
+                                      />
+                                    </td>
+                                  </tr>
+                                </>
+                              ))}
                           </>
                         ) : (
                           <>
@@ -594,7 +756,7 @@ export default function Blog() {
                               style={{ backgroundColor: "whitesmoke" }}
                               className="text-center"
                             >
-                              <td colSpan={6}>
+                              <td colSpan={8}>
                                 <h5>No Data Available</h5>
                               </td>
                             </tr>
@@ -609,6 +771,23 @@ export default function Blog() {
               </table>
 
               <div className="mt-4">{loader && <Loader />}</div>
+            
+              {tableData.length != 0 && (
+                <div>
+                  <Pagination
+                    updateShowPerpagevalue={updateShowPerpagevalue}
+                    showPrePage={showPrePage}
+                    onPaginationChange={onPaginationChange}
+                    total={tableData.length}
+                    paginationTypeApi={true}
+                    pageNumber={pageNumber}
+                    setPageNumber={setPageNumber}
+                    recordLength={recordLength}
+                    setRecordLength={setRecordLength}
+                    totalLength={totalLength}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

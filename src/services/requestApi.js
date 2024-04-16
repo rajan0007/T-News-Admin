@@ -2,68 +2,18 @@ import axiosInstance from "./http-common";
 
 class DataService {
   Login(data) {
-    return axiosInstance.post("auth/loginProviderAndAdmin", data);
-  }
-
-  UpdateAdmin(data) {
-    return axiosInstance.patch("auth/changeAdminPassword", data);
+    return axiosInstance.post("auth/loginAdmin", data);
   }
   TokenVerify() {
     return axiosInstance.get("/auth/token-verify");
-  }
-
-  //Customer
-  GetUser() {
-    return axiosInstance.get("auth/all-user");
-  }
-  UpdateCustomer(data) {
-    console.log("data", data);
-    return axiosInstance.patch("auth/updateUserProfile", data);
-  }
-  DeleteCustomer(data) {
-    console.log("data", data);
-    return axiosInstance.post("auth/deleteUser", data);
-  }
-
-  //Provider
-  GetAllProvider() {
-    return axiosInstance.get("provider/allProvider");
-  }
-  UpdateProvider(data) {
-    return axiosInstance.patch("provider/updateProvider", data);
-  }
-  DeleteProvider(data) {
-    return axiosInstance.post("provider/deleteProvider", data);
-  }
-  FindProvider(data) {
-    return axiosInstance.post("/provider/findProviderById", data);
-  }
-  ProviderImage(data) {
-    return axiosInstance.post("/auth/upload", data);
-  }
-
-  blogImage(data) {
-    return axiosInstance.post("/blog/uploadImageBlog", data);
-  }
-  UpdateBlog(data) {
-    return axiosInstance.patch("blog/updateBlog", data);
-  }
-
-  GetProviderBooking(data) {
-    return axiosInstance.post("/booking/getProviderById", data);
-  }
-
-  //Booking
-  Booking() {
-    return axiosInstance.get("/booking/allBooking");
   }
 
   //Admin
   GetAllAdmin() {
     return axiosInstance.get("auth/all-admin");
   }
-  DeleteAdmin(data) {
-    return axiosInstance.post("auth/deleteAdmin", data);
+  UpdateAdmin(data) {
+    return axiosInstance.patch("auth/changeAdminPassword", data);
   }
   UpdateAdmin(data) {
     return axiosInstance.patch("auth/updateAdminProfile", data);
@@ -71,9 +21,19 @@ class DataService {
   AddAdmin(data) {
     return axiosInstance.post("auth/addAdmin", data);
   }
+  DeleteAdmin(data) {
+    return axiosInstance.post("auth/deleteAdmin", data);
+  }
 
+  //Blog
   addBlog(data) {
     return axiosInstance.post("blog/addBlog", data);
+  }
+  blogImage(data) {
+    return axiosInstance.post("/blog/uploadImageBlog", data);
+  }
+  UpdateBlog(data) {
+    return axiosInstance.patch("blog/updateBlog", data);
   }
 }
 

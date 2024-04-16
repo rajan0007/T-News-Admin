@@ -15,6 +15,7 @@ export default function Pagination({
 
   useEffect(() => {
     const value = showPrePage * counter;
+   
     onPaginationChange(value - showPrePage, value);
     setNumberOfButton(Math.ceil(total / showPrePage));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -23,7 +24,6 @@ export default function Pagination({
   // React.useEffect(() => {
   //   updateShowPerpagevalue(1);
   // }, []);
-
   const onButtonClick = (type) => {
     if (type === "p") {
       if (counter === 1) {
@@ -58,7 +58,7 @@ export default function Pagination({
         </div>
         <nav aria-label="Page navigation example">
           <ul class="pagination">
-            {/* {console.log("numberOfButton", numberOfButton)} */}
+           
             <li class="page-item">
               <p
                 class="page-link"
@@ -79,7 +79,9 @@ export default function Pagination({
             </li>
 
             {new Array(numberOfButton)?.fill("")?.map((item, index) => (
+             
               <>
+             
                 <li
                   class={`page-item ${index + 1 === counter ? "active" : null}`}
                 >

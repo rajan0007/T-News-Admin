@@ -140,7 +140,36 @@ export default function SideBar() {
                     </p>
                 </p>
               </div>
-              {isPro != "Provider" && (
+              <div className="nav-item">
+                  <p
+                    className={`nav-link ${
+                      window.location.pathname.split("/")[1] === "blog" &&
+                      "active"
+                    }`}
+                    id="blog"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      history("/blog");
+                      setActive1(true);
+                      setActive2(true);
+                      setActive3(true);
+                      setActive4(true);
+                      setActive5(true);
+                      setActive9(true);
+                      setActive6(true);
+                      setActive7(true);
+                      setActive8(true);
+                    }}
+                  >
+                    <SubscriptionsIcon
+                      className="mr-2"
+                      style={{ color: "white" }}
+                    />
+                    <p style={{ color: "white" }}>Blog</p>
+                  </p>
+                </div>
+            
+              {/* {isPro != "Provider" && (
                 <li className="nav-item ">
                   <p
                     className="nav-link"
@@ -224,8 +253,8 @@ export default function SideBar() {
                     </li>
                   </ul>
                 </li>
-              )}
-              {isPro != "Provider" && (
+              )} */}
+              {/* {isPro != "Provider" && (
                <div className="nav-item">
                <p
                  className={`nav-link ${
@@ -251,8 +280,8 @@ export default function SideBar() {
                  <p style={{ color: "white" }}>Booking</p>
                </p>
              </div>
-              )}
-              {isPro != "Admin" && (
+              )} */}
+              {/* {isPro != "Admin" && (
                 <div className="nav-item">
                   <p
                     className={`nav-link ${window.location.pathname.split("/")[1] ===
@@ -277,39 +306,11 @@ export default function SideBar() {
                     <p style={{ color: "white" }}>Booking</p>
                   </p>
                 </div>
-              )}
-              {isPro != "Provider" && (
-                <div className="nav-item">
-                  <p
-                    className={`nav-link ${
-                      window.location.pathname.split("/")[1] === "blog" &&
-                      "active"
-                    }`}
-                    id="blog"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      history("/blog");
-                      setActive1(true);
-                      setActive2(true);
-                      setActive3(true);
-                      setActive4(true);
-                      setActive5(true);
-                      setActive9(true);
-                      setActive6(true);
-                      setActive7(true);
-                      setActive8(true);
-                    }}
-                  >
-                    <SubscriptionsIcon
-                      className="mr-2"
-                      style={{ color: "white" }}
-                    />
-                    <p style={{ color: "white" }}>Blog</p>
-                  </p>
-                </div>
-              )}
+              )} */}
+             
+             
 
-              <div className="nav-item">
+              {/* <div className="nav-item">
                 <p
                   className={`nav-link ${
                     window.location.pathname.split("/")[1] === "payment" &&
@@ -336,7 +337,7 @@ export default function SideBar() {
                   />
                   <p style={{ color: "white" }}>Payment</p>
                 </p>
-              </div>
+              </div> */}
             </ul>
           </nav>
         </div>
