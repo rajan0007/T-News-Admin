@@ -419,6 +419,8 @@ export default function Blog() {
                             <Field
                               type="text"
                               name="title"
+                              rows={3}
+                              as="textarea"
                               disabled={!isEdit}
                               placeholder="Enter title"
                               className={`mt-2 form-control
@@ -617,47 +619,47 @@ export default function Blog() {
                 </h3>
               </div>
               <div className="col-5">
-                  <div className="pl-4 pr-4 pt-3">
-                    <div className="d-flex" style={{    justifyContent: 'space-evenly'}}>
+                <div className="pl-4 pr-4 pt-3">
+                  <div
+                    className="d-flex"
+                    style={{ justifyContent: "space-evenly" }}
+                  >
                     <div class="form-group">
-                    <label for="typeFilter" class="form-label">
-                       Type:
-                    </label>
-                    <select
-                      id="typeFilter"
-                      class="form-select"
-                      value={selectedTypeFilter}
-                      onChange={handleTypeFilterChange}
-                    >
-                      <option value="">All Types</option>
-                      <option value="International">International</option>
-                      <option value="Trending">Trending</option>
-                      <option value="Popular">Popular</option>
-                      <option value="Featured">Featured</option>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                    <label htmlFor="categoryFilter">
-                    Categories:
-                    </label>
-                    <select
-                      id="categoryFilter"
-                      value={selectedCategoryFilter}
-                      onChange={(e) =>
-                        setSelectedCategoryFilter(e.target.value)
-                      }
-                    >
-                      <option value="">All Categories</option>
-                      <option value="News">News</option>
-                      <option value="Sports">Sports</option>
-                      <option value="Business">Business</option>
-                      <option value="Politics">Politics</option>
-                      <option value="Technology">Technology</option>
-                      <option value="Entertainment">Entertainment</option>
-                    </select>
-                  </div>
+                      <label for="typeFilter" class="form-label">
+                        Type:
+                      </label>
+                      <select
+                        id="typeFilter"
+                        class="form-select"
+                        value={selectedTypeFilter}
+                        onChange={handleTypeFilterChange}
+                      >
+                        <option value="">All Types</option>
+                        <option value="International">International</option>
+                        <option value="Trending">Trending</option>
+                        <option value="Popular">Popular</option>
+                        <option value="Featured">Featured</option>
+                      </select>
                     </div>
-                 
+                    <div class="form-group">
+                      <label htmlFor="categoryFilter">Categories:</label>
+                      <select
+                        id="categoryFilter"
+                        value={selectedCategoryFilter}
+                        onChange={(e) =>
+                          setSelectedCategoryFilter(e.target.value)
+                        }
+                      >
+                        <option value="">All Categories</option>
+                        <option value="News">News</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Business">Business</option>
+                        <option value="Politics">Politics</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Entertainment">Entertainment</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -690,6 +692,7 @@ export default function Blog() {
                                   (!selectedCategoryFilter ||
                                     item.categories === selectedCategoryFilter)
                               )
+                              .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
                               .slice(pagination.start, pagination.end)
                               .map((item, index) => (
                                 <>
@@ -709,20 +712,31 @@ export default function Blog() {
                                     </td>
                                     <td>{item.title}</td>
                                     <td>
-                                    {showFullDesc[index]
-                    ? item.desc
-                    : `${item.desc.split(" ").slice(0, 50).join(" ")}${
-                        item.desc.split(" ").length > 50 ? " ..." : ""
-                      }`}
-                  {item.desc.split(" ").length > 50 && (
+                                      {showFullDesc[index]
+                                        ? item.desc
+                                        : `${item.desc
+                                            .split(" ")
+                                            .slice(0, 50)
+                                            .join(" ")}${
+                                            item.desc.split(" ").length > 50
+                                              ? " ..."
+                                              : ""
+                                          }`}
+                                      {item.desc.split(" ").length > 50 && (
                                         <button
-                                        className="btn btn-link"
-                      onClick={() => toggleFullDesc(index)}
-                      style={{ border: "none", background: "none", cursor: "pointer" }}
-                    >
-                      {showFullDesc[index] ? "Show less" : "Show more"}
-                    </button>
-                  )}
+                                          className="btn btn-link"
+                                          onClick={() => toggleFullDesc(index)}
+                                          style={{
+                                            border: "none",
+                                            background: "none",
+                                            cursor: "pointer",
+                                          }}
+                                        >
+                                          {showFullDesc[index]
+                                            ? "Show less"
+                                            : "Show more"}
+                                        </button>
+                                      )}
                                     </td>
                                     <td>
                                       {moment(item.createdAt).format(
@@ -771,7 +785,7 @@ export default function Blog() {
               </table>
 
               <div className="mt-4">{loader && <Loader />}</div>
-            
+
               {tableData.length != 0 && (
                 <div>
                   <Pagination
