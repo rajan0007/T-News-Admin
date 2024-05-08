@@ -54,10 +54,10 @@ code {
   font-size: 19px;
 }
 .file-upload-box {
-  border: 1px solid #007bff!important;
+  border: 1px solid #ff1d50!important;
 }
 .drag-file-area label .browse-files-text {
-  color: #007bff!important;
+  color: #ff1d50!important;
   font-weight: bolder;
   margin-right: 10px;
   cursor: pointer;
@@ -134,7 +134,7 @@ code {
   width: 0;
   height: 5px;
   border-radius: 25px;
-  background-color: #007bff;
+  background-color: #ff1d50;
 }
 .upload-button {
   font-family: "Montserrat";

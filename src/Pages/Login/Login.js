@@ -30,7 +30,7 @@ export default function Login() {
         <div
           class="card card-outline"
           style={{
-            borderTop: "3px solid #007bff",
+            borderTop: "3px solid #ff1d50",
           }}
         >
           <div
@@ -44,11 +44,9 @@ export default function Login() {
             <img
               src={Logo}
               alt="Logo"
-              style={{ opacity: "0.8", width: "25%", height: "50px" }}
+              style={{ opacity: "0.8", width: "62%", height: "92px" }}
             />
-            <p class="h3">
-              <b>House-Fix</b>
-            </p>
+            
           </div>
           <div class="card-body">
             <p class="login-box-msg">Sign in to start your session</p>

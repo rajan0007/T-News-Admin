@@ -292,6 +292,7 @@ export default function Blog() {
   const fileInputRef = useRef(null);
   const handleImageChange = async (event) => {
     const selectedImage = event.target.files[0];
+    console.log('selectedImage', selectedImage)
     if (selectedImage) {
       const reader = new FileReader();
       reader.onload = () => {
@@ -302,8 +303,10 @@ export default function Blog() {
       const formData = new FormData();
 
       if (openValue == 2) {
-        formData.append("file", selectedImage);
+        formData.append("file", selectedImage); 
         formData.append("id", rowValue._id);
+        console.log('image', image)
+        console.log('formData', formData)
         try {
           const { data } = await DataServices.blogImage(formData);
           if (data?.status) {
@@ -313,7 +316,9 @@ export default function Blog() {
           } else {
             toast.warning(data?.message);
           }
-        } catch (error) {}
+        } catch (error) {
+          console.log('error', error)
+        }
       }
     }
   };
@@ -457,7 +462,8 @@ export default function Blog() {
                                 position: "relative",
                                 overflow: "hidden",
                               }}
-                            >
+                              >
+                            
                               {image ? (
                                 <img
                                   src={image}

@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 // import ReportIcon from "@mui/icons-material/Report";
 import SettingsInputSvideoIcon from "@mui/icons-material/SettingsInputSvideo";
-import Logo from "../src/img/logo.png";
+import Logo from "../src/img/logo1.png";
 import { useAppContext } from "./Lib/ContextLib";
 // import total_income_icon from "./icon/total_income_icon.svg";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -63,7 +63,7 @@ export default function SideBar() {
           <img
             src={Logo}
             alt="Logo"
-            style={{ opacity: "0.8", width: "30%", height: "50px" }}
+            style={{ opacity: "0.8", width: "60%", height: "65px" }}
           />
           {/* <h1 style={{ color: "white" }}>
             <span style={{ color: "#ffab3a" }}>
